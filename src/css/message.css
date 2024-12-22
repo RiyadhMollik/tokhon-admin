@@ -1,0 +1,18 @@
+.address_alert_copy {
+    position: fixed; /* Change from absolute to fixed to ensure it's centered relative to the viewport */
+    top: 50%; /* Vertically center */
+    left: 50%; /* Horizontally center */
+    color: #fff;
+    transform: translate(-50%, -50%); /* Adjust for perfect centering */
+    z-index: 200017; /* Ensure it's on top */
+  }
+  
+  .custom_alert {
+    background-color: #000000b3;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+    z-index: 200017; /* Ensure the alert is on top */
+  }
+  
