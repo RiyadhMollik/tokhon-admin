@@ -18,9 +18,9 @@ const RideDetails = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/ride-details', {
-          params: { id: id },
-        });
+        const response = await axios.get(`api/ridesharing/${id}`);
+        console.log(response);
+        
         setData(response.data.data);
         setIsLoader(false);
       } catch (error) {

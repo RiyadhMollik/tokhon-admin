@@ -10,11 +10,14 @@ const VehicleDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertVisible, setAlertVisible] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/vehicle-details', {
+        const response = await axios.get('api/driver-vehicles', {
           params: { id: id },
         });
         setData(response.data.data); // Set the full response data
@@ -28,6 +31,39 @@ const VehicleDetails = () => {
     fetchData();
   }, [id]);
 
+  const handleApprove = async (id) => {
+    setIsLoader(true); // Show loader
+
+    try {
+      // Make the API call
+      const response = await axios.get(`/api/driver-vehicle/approve`, {
+        params: {
+          id: id,
+        },
+      });
+
+      // Display success message
+      setAlertMessage(response.data.message || 'Approved successfully');
+      setAlertVisible(true);
+
+      // Hide alert after 2 seconds
+      setTimeout(() => setAlertVisible(false), 2000);
+
+      window.location.reload();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+
+      // Display error message
+      setAlertMessage('An error occurred while updating the user.');
+      setAlertVisible(true);
+
+      // Hide alert after 2 seconds
+      setTimeout(() => setAlertVisible(false), 2000);
+    } finally {
+      setIsLoader(false); // Hide loader
+    }
+  };
+
   if (isLoader) return <Loader />;
   if (!data) return <p>No vehicle data available.</p>;
 
@@ -35,20 +71,32 @@ const VehicleDetails = () => {
     <div className="container mt-4">
       <h1 className="fw-bold text-center">Vehicle Details</h1>
 
+      {alertVisible && (
+        <div
+          id="copyModal"
+          role="dialog"
+          className="address_alert_copy custom_alert"
+          style={{ zIndex: '200017', transition: '.3s all' }}
+        >
+          <div className="van-toast__text">{alertMessage}</div>
+        </div>
+      )}
+      {isLoader ? <Loader /> : null}
+
       {/* Vehicle Details */}
       <div className="card mt-4">
         <div className="card-body">
           <h5 className="card-title">Vehicle Type: {data.vehicleTypeName}</h5>
           <p className="card-text">{data.description}</p>
-            <a href={data.image}>
+          <a href={data.image}>
             <img
-            width={50}
-                src={data.image}
-                alt="Vehicle"
-                className="img-fluid mb-3"
-                style={{ maxWidth: '100%', borderRadius: '8px' }}
+              width={50}
+              src={data.image}
+              alt="Vehicle"
+              className="img-fluid mb-3"
+              style={{ maxWidth: '100%', borderRadius: '8px' }}
             />
-            </a>
+          </a>
 
           {/* Conditional Rendering for Extra Options */}
           {data.extraOptions ? (
@@ -68,19 +116,31 @@ const VehicleDetails = () => {
           <h6>Documents:</h6>
           <p>
             <strong>NID:</strong>{' '}
-            <a href={data.documents?.nid} target="_blank" rel="noopener noreferrer">
+            <a
+              href={data.documents?.nid}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View
             </a>
           </p>
           <p>
             <strong>Driving License:</strong>{' '}
-            <a href={data.documents?.drivingLicense} target="_blank" rel="noopener noreferrer">
+            <a
+              href={data.documents?.drivingLicense}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View
             </a>
           </p>
           <p>
             <strong>Vehicle Front Picture:</strong>{' '}
-            <a href={data.documents?.vehiclePicFront} target="_blank" rel="noopener noreferrer">
+            <a
+              href={data.documents?.vehiclePicFront}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View
             </a>
           </p>
@@ -107,14 +167,18 @@ const VehicleDetails = () => {
 
       {/* Navigation Buttons */}
       <div className="text-center mt-4">
+        {data.status != 'verified' ? (
+          <button
+            className="inline-block rounded  py-0.5 px-2.5 text-sm font-medium bg-meta-3/[0.08] text-meta-3"
+            onClick={() => handleApprove(data?.id)} // Replace with your approval logic
+          >
+            Approve
+          </button>
+        ) : (
+          <div></div>
+        )}
         <button
-          className="btn btn-primary"
-          onClick={() => navigate(`/approve/${data.id}`)}
-        >
-          Approve
-        </button>
-        <button
-          className="btn btn-secondary ml-3"
+          className="inline-block rounded  py-0.5 px-2.5 text-sm font-medium bg-red/[0.08] text-red ml-5"
           onClick={() => navigate('/adv')}
         >
           Back

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loader from '../extra/loader';
+import Pagination from './../Pagination';
 
 const TopupList = () => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -10,6 +11,9 @@ const TopupList = () => {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(0);
 
   const handleImageClick = () => {
     setShowModal(true);
@@ -22,10 +26,14 @@ const TopupList = () => {
   const fetchData = async (statusFilter = '') => {
     setIsLoader(true);
     try {
-      const response = await axios.get('api/wallet/topup', {
-        params: { status: statusFilter },
+      const response = await axios.get('api/wallet/top-up-requests', {
+        params: {
+           status: statusFilter,
+           page: page 
+          },
       });
       setData(response.data.data || []);
+      setPagination(response.data.pagination.totalPages);
       setIsLoader(false);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -33,10 +41,14 @@ const TopupList = () => {
     }
   };
 
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber); // Update the current page
+  };
+
   // Initial data fetch
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(status);
+  }, [page, status]);
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -45,36 +57,35 @@ const TopupList = () => {
 
   const handleApprove = async (id) => {
     setIsLoader(true); // Show loader
-
+  
     try {
       // Make the API call
-      const response = await axios.get(`/api/wallet/topup-approve`, {
-        params: {
-          id: id,
-        },
+      const response = await axios.post(`/api/wallet/approve-topup-request`, {
+        topUpRequestId: id, // Move inside the request body
       });
-
+  
       // Display success message
       setAlertMessage(response.data.message || 'Approved successfully');
       setAlertVisible(true);
-
+  
       // Hide alert after 2 seconds
       setTimeout(() => setAlertVisible(false), 2000);
-
+  
       fetchData(status);
     } catch (error) {
       console.error('Error submitting form:', error);
-
+  
       // Display error message
       setAlertMessage('An error occurred while updating the user.');
       setAlertVisible(true);
-
+  
       // Hide alert after 2 seconds
       setTimeout(() => setAlertVisible(false), 2000);
     } finally {
       setIsLoader(false); // Hide loader
     }
   };
+  
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -283,6 +294,12 @@ const TopupList = () => {
             ))}
           </tbody>
         </table>
+
+        <Pagination
+          totalPages={pagination}
+          currentPage={page}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ const AllDriverVehicle = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/driver-vehicle-list', {
+        const response = await axios.get('api/driver-vehicles', {
           params: {
             page: page, // Passing the page parameter
           },
@@ -122,6 +122,29 @@ const AllDriverVehicle = () => {
                         <path
                           d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
                           fill=""
+                        />
+                      </svg>
+                    </button>
+
+                    <button
+                      onClick={() => navigate(`/ride-edit/${item.id}`)}
+                      className="hover:text-primary"
+                    >
+                      <svg
+                        className="fill-current"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3 21h2.586L17.657 8.93a1 1 0 0 0 0-1.415l-2.172-2.172a1 1 0 0 0-1.415 0L3 16.586V21zm16.172-13.657l-2.172-2.172 1.415-1.415 2.172 2.172-1.415 1.415z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M2 21v-2.414L14.586 6l2.828 2.828L4.828 21H2z"
+                          fill="currentColor"
                         />
                       </svg>
                     </button>

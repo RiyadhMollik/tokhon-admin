@@ -13,7 +13,7 @@ const ServiceCreate: React.FC = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/service/list');
+        const response = await axios.get('api/services');
         setData(response.data); // Assuming `response.data` is an array of services
 
         setIsLoader(false);

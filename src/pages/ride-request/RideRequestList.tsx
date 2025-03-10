@@ -16,7 +16,7 @@ const RideRequestList = () => {
   const fetchData = async (statusFilter = '') => {
     setIsLoader(true);
     try {
-      const response = await axios.get('api/ride-request/list', {
+      const response = await axios.get('api/ride-requests', {
         params: { status: statusFilter },
       });
       setData(response.data.data || []);
@@ -26,7 +26,6 @@ const RideRequestList = () => {
       setIsLoader(false);
     }
   };
-
   // Initial data fetch
   useEffect(() => {
     fetchData();

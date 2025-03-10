@@ -21,20 +21,29 @@ const AddVehicleToService = () => {
   const [capacity, setCapacity] = useState('');
   const [outsideCity, setOutsideCity] = useState('');
 
-
-  const [data, setData] = useState([]);
+  const [serviceData, setServiceData] = useState([]);
+  const [vehicleData, setVehicleData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoader(true);
       try {
-        const response = await axios.get('api/service-vehicle-list');
-        setData(response.data); // Assuming `response.data` is an array of services
-
-        setIsLoader(false);
+        const response = await axios.get('api/services');   
+        setServiceData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
-        setIsLoader(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('api/vehicle-types');   
+        setVehicleData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -43,46 +52,34 @@ const AddVehicleToService = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    // Create a FormData object to gather form data
-    const formData = new FormData();
-    formData.append('serviceId', serviceId);
-    formData.append('vehicleTypeId', vehicleTypeId);
-    formData.append('vehicleName', vehicleName);
-    formData.append('perKm', perKm);
-    formData.append('commission', commission);
-
-    formData.append('enabled', enabled);
-    formData.append('capacity', capacity);
-    formData.append('outsideCity', outsideCity);
-
-
+    const data = {
+      serviceId,
+      vehicleTypeId,
+      vehicleName,
+      perKm,
+      commission,
+      enabled,
+      capacity,
+      outsideCity
+    };
+  
     try {
       setIsLoader(true);
-
-      const response = await axios.post('/api/save-vehicle-service', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setAlertMessage(response.data.message || 'Something went wrong');
+      const response = await axios.post('/api/services/vehicles', data);
       setAlertVisible(true);
-
-      // Hide the alert after 2 seconds
+  
       setTimeout(() => {
         setAlertVisible(false);
       }, 2000);
-
-      // Navigate to another page if needed
-      if (response.data.success) {
+  
+      if (response.status === 201) {
         navigate('/vehicle-type/list');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
       setAlertMessage('An error occurred while creating the service.');
       setAlertVisible(true);
-
+  
       setTimeout(() => {
         setAlertVisible(false);
       }, 2000);
@@ -90,6 +87,7 @@ const AddVehicleToService = () => {
       setIsLoader(false);
     }
   };
+  
 
   return (
     <>
@@ -140,7 +138,7 @@ const AddVehicleToService = () => {
                   onChange={(e) => setServiceId(e.target.value)}
                 >
                   <option value="">Please select</option>
-                  {data?.services?.map((item, index) => (
+                  {serviceData?.map((item, index) => (
                     <option value={item.id} key={index}>
                       {item.name}
                     </option>
@@ -159,7 +157,7 @@ const AddVehicleToService = () => {
                   onChange={(e) => setVehicleTypeId(e.target.value)}
                 >
                   <option value="">Please select</option>
-                  {data?.vehicles?.map((item, index) => (
+                  {vehicleData?.map((item, index) => (
                     <option value={item.id} key={index}>
                       {item.name}
                     </option>

@@ -20,7 +20,7 @@ const UserEdit = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`/api/user-details/${id}`);
+        const response = await axios.get(`api/user/${id}`);
         setData(response.data);
         setFormData({
           is_verified: response.data.is_verified, // Ensure pre-filled data matches structure
@@ -49,7 +49,7 @@ const UserEdit = () => {
 
     try {
       const response = await axios.put(
-        `/api/user-update/${id}`,
+        `api/user/${id}`,
         formData,
         {
           headers: {

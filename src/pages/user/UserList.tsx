@@ -15,7 +15,7 @@ const UserList = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/users');
+        const response = await axios.get('api/user/all');
         console.log(response)
         setData(response.data); // Assuming `response.data` is an array of services
         setIsLoader(false);

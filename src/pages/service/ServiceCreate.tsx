@@ -30,7 +30,7 @@ const ServiceCreate: React.FC = () => {
     try {
       setIsLoader(true);
 
-      const response = await axios.post('/api/service/store', formData, {
+      const response = await axios.post('/api/services', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

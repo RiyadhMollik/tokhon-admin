@@ -14,7 +14,7 @@ const ListType = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/vehicle/list');
+        const response = await axios.get('api/vehicle-types');
         setData(response.data); // Assuming `response.data` is an array of services
 
         setIsLoader(false);

@@ -24,7 +24,9 @@ const SignIn: React.FC = () => {
     try {
       setIsLoader(true);
 
-      const response = await axios.post('api/login', formData);
+      const response = await axios.post('api/auth/login', formData);
+      console.log(response);
+      
 
       setAlertMessage(response.data.message || 'Something happened');
       setAlertVisible(true);
@@ -32,11 +34,12 @@ const SignIn: React.FC = () => {
         setAlertVisible(false);
       }, 2000);
       setIsLoader(false);
-      if (response.data.data.token) {
-        localStorage.setItem('token', response.data.data.token);
+      if (response.data.token) {
+        console.log(response.data.token);
+        localStorage.setItem('token', response.data.token);
         axios.defaults.headers.common[
           'Authorization'
-        ] = `Bearer ${response.data.data.token}`;
+        ] = `Bearer ${response.data.token}`;
         navigate('/dashboard');
       }
     } catch (error) {
@@ -52,8 +55,8 @@ const SignIn: React.FC = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-                <img className="hidden dark:block" src={Logo} alt="Logo" />
-                <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                <img className="hidden dark:block" src='https://i.ibb.co.com/KxJD53tp/app-logo-truck-lagbe-truck-lagbe-dark-svg.png' alt="Logo" />
+                <img className="dark:hidden" src='https://i.ibb.co.com/SGGmysh/truck-lagbe-dark-svg.png' alt="Logo" />
               </Link>
 
               {alertVisible && (
@@ -68,8 +71,7 @@ const SignIn: React.FC = () => {
               )}
               {isLoader ? <Loader /> : null}
               <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
+               
               </p>
 
               <span className="mt-15 inline-block">
@@ -199,9 +201,9 @@ const SignIn: React.FC = () => {
 
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
+              
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                Sign In to RideShare
+                Sign In to Tokhon Admin
               </h2>
 
               <form onSubmit={handleSubmit}>

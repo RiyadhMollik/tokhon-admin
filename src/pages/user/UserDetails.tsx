@@ -16,7 +16,7 @@ const UserDetails = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`/api/user-details/${id}`);
+        const response = await axios.get(`api/user/${id}`);
         setData(response.data); // Assuming response.data contains the user object
         setIsLoader(false);
       } catch (error) {
@@ -32,43 +32,61 @@ const UserDetails = () => {
   if (!data) return <p>No user data available.</p>;
 
   return (
-    <div className="row">
-      <div className="col-sm-2"></div>
-      <div className="col-sm-8">
-        <ul className="list-group">
-          <li className="list-group-item active" aria-current="true">
-            Details {data.name}
-          </li>
-          <li className="list-group-item bg-white">Email: {data.email}</li>
-          <li className="list-group-item bg-white">
-            Phone Number: {data.phone_number}
-          </li>
-          <li className="list-group-item bg-white">Address: {data.address}</li>
-          <li className="list-group-item bg-white">
-            NID Photo:{' '}
-            <img src={data.nid_photo} alt="NID" style={{ maxWidth: '100%' }} />
-          </li>
-          <li className="list-group-item bg-white">
-            Verified Status: {data.is_verified ? 'Verified' : 'Not-Verified'}
-          </li>
-          <li className="list-group-item bg-white">
-            Push Token: {data.push_token}
-          </li>
-          <li className="list-group-item bg-white">
-            Referral Code: {data.referral_code}
-          </li>
-          <li className="list-group-item bg-white">
-            Wallet Balance: {data.wallet_balance}
-          </li>
-          <li className="list-group-item bg-white">Gender: {data.gender}</li>
-        </ul>
+    <div className="container mt-4">
+      {/* Header Section */}
+      <div className="row mb-4">
+        <div className="col text-center">
+          <h1 className="fw-bold">User Details</h1>
+        </div>
       </div>
-      <div className="col-sm-2"></div>
 
-      <div className="row">
+      {/* Alert Section */}
+      {alertVisible && (
+        <div
+          id="copyModal"
+          role="dialog"
+          className="address_alert_copy custom_alert"
+          style={{ zIndex: '200017', transition: '.3s all' }}
+        >
+          <div className="van-toast__text">{alertMessage}</div>
+        </div>
+      )}
+      {isLoader ? <Loader /> : null}
+
+      {/* User and Driver Details */}
+      <div className="row mb-4">
+        <div className="col-md-4">
+          <div className="card shadow-sm">
+            <div className="card-body text-center">
+              <img
+                src={data.profile_picture}
+                alt={data.name}
+                className="rounded-circle mb-3 mx-auto d-block"
+                style={{ width: '80px', height: '80px' }}
+              />
+              <h5 className="card-title">{data.name}</h5>
+              <p className="card-text">Email: {data.email}</p>
+              <p className="card-text">Phone: {data.phone_number}</p>
+              <p className="card-text">Gender: {data.gender}</p>
+              <p className="card-text">Joined AT: {data.created_at}</p>
+              <p className="card-text">Address: {data.address}</p>
+              <p className="card-text">Wallet Balance: {data.wallet_balance}</p>
+              <hr></hr>
+                <h2>NID</h2>
+                <img
+                  src={data.nid_photo}
+                  alt={data.name}
+                  className="rounded-circle mb-3 mx-auto d-block"
+                  style={{ width: '80px', height: '80px' }}
+                />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row mt-5">
         <div className="col-sm-12 text-center mt-2">
           <button
-            className="btn btn-primary fw-medium text-white py-2 px-4"
+            className=" rounded bg-primary px-2 py-1 text-xs font-medium text-white"
             onClick={() => navigate(`/user-edit/${data.user_id}`)}
           >
             EDIT

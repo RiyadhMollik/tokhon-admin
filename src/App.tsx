@@ -31,12 +31,9 @@ import RideDetails from './pages/ride-request/RideDetails';
 import UserDetails from './pages/user/UserDetails';
 import UserEdit from './pages/user/UserEdit';
 import TopupList from './pages/topup/TopupList';
-
+import RideEdit from './pages/vehicle/RideEdit';
 
 import axios from 'axios';
-
-
-
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,9 +46,8 @@ function App() {
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
-
-  axios.defaults.baseURL = 'https://localhost/ikbarvai/transport/'; // local
-  // axios.defaults.baseURL = "https://transport.myway66.com/transport/"; // live
+  // axios.defaults.baseURL = 'https://localhost/ikbarvai/transport/'; // local
+  axios.defaults.baseURL = "https://hoishailhadaapi.tokhon.com/";
   const token = localStorage.getItem('token');
   axios.defaults.headers.common['Authorization'] = token
     ? `Bearer ${token}`
@@ -70,7 +66,7 @@ function App() {
         path="/"
         element={
           <>
-            <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Tokhon" />
             <AuthRoute>
               <SignIn />
             </AuthRoute>
@@ -85,7 +81,7 @@ function App() {
           path="/dashboard"
           element={
             <>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <ECommerce />
               </PrivateRoute>
@@ -97,7 +93,7 @@ function App() {
           path="/service/create"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <ServiceCreate />
               </PrivateRoute>
@@ -109,7 +105,7 @@ function App() {
           path="/service/list"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <ServiceList />
               </PrivateRoute>
@@ -121,7 +117,7 @@ function App() {
           path="/vehicle-type/list"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <ListType />
               </PrivateRoute>
@@ -132,7 +128,7 @@ function App() {
           path="/vehicle-type/create"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <AddType />
               </PrivateRoute>
@@ -143,7 +139,7 @@ function App() {
           path="/vts"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <AddVehicleToService />
               </PrivateRoute>
@@ -154,7 +150,7 @@ function App() {
           path="/users"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <UserList />
               </PrivateRoute>
@@ -165,7 +161,7 @@ function App() {
           path="/adv"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <AllDriverVehicle />
               </PrivateRoute>
@@ -176,7 +172,7 @@ function App() {
           path="/rrl"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <RideRequestList />
               </PrivateRoute>
@@ -187,7 +183,7 @@ function App() {
           path="/ride-details/:id"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <RideDetails />
               </PrivateRoute>
@@ -198,7 +194,7 @@ function App() {
           path="/user-details/:id"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <UserDetails />
               </PrivateRoute>
@@ -209,7 +205,7 @@ function App() {
           path="/user-edit/:id"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <UserEdit />
               </PrivateRoute>
@@ -220,7 +216,7 @@ function App() {
           path="/topup/list"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <TopupList />
               </PrivateRoute>
@@ -231,34 +227,29 @@ function App() {
           path="/vehicle-details/:id"
           element={
             <>
-              <PageTitle title="Service | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <VehicleDetails />
               </PrivateRoute>
             </>
           }
         />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <Route
+          path="/ride-edit/:id"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <RideEdit />
+              </PrivateRoute>
+            </>
+          }
+        />
         <Route
           path="/calendar"
           element={
             <>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Calendar | Tokhon" />
               <Calendar />
             </>
           }
@@ -267,7 +258,7 @@ function App() {
           path="/profile"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Profile | Tokhon" />
               <Profile />
             </>
           }
@@ -276,7 +267,7 @@ function App() {
           path="/forms/form-elements"
           element={
             <>
-              <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Form Elements | Tokhon" />
               <FormElements />
             </>
           }
@@ -285,7 +276,7 @@ function App() {
           path="/forms/form-layout"
           element={
             <>
-              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Form Layout | Tokhon" />
               <FormLayout />
             </>
           }
@@ -294,7 +285,7 @@ function App() {
           path="/tables"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Tables | Tokhon" />
               <Tables />
             </>
           }
@@ -303,7 +294,7 @@ function App() {
           path="/settings"
           element={
             <>
-              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Settings | Tokhon" />
               <Settings />
             </>
           }
@@ -312,7 +303,7 @@ function App() {
           path="/chart"
           element={
             <>
-              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Basic Chart | Tokhon" />
               <Chart />
             </>
           }
@@ -321,7 +312,7 @@ function App() {
           path="/ui/alerts"
           element={
             <>
-              <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Alerts | Tokhon" />
               <Alerts />
             </>
           }
@@ -330,7 +321,7 @@ function App() {
           path="/ui/buttons"
           element={
             <>
-              <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Buttons | Tokhon" />
               <Buttons />
             </>
           }
