@@ -85,21 +85,20 @@ const RideEdit = () => {
       });
 
       // Make the PUT request with the FormData object
-      const response = await axios.post(`/api/ride-update/${id}`, formDataObj, {
+      const response = await axios.put(`/api/driver-vehicles/${id}`, formDataObj, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
-
+      
+      
       // Handle the response
-      setAlertMessage(response.data.message || 'Unknow message');
       setAlertVisible(true);
-
       // Optionally redirect after a delay
-      if (response.data.success) {
+      if (response.status === 200) {
         setTimeout(() => {
           setAlertVisible(false);
-          // navigate("/users"); // Uncomment if redirection is required
+          navigate("/adv"); // Uncomment if redirection is required
         }, 2000);
       }
     } catch (error) {

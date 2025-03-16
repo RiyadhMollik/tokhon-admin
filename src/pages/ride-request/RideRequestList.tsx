@@ -41,7 +41,7 @@ const RideRequestList = () => {
 
     try {
       // Make the API call
-      const response = await axios.get(`/api/ride-approve`, {
+      const response = await axios.post(`/api/ride-request/approved`, {
         params: {
           id: id,
         },

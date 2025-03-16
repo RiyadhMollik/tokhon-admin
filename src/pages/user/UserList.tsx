@@ -10,13 +10,14 @@ const UserList = () => {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
-
+  const [userType, setUserType] = useState('normal');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/user/all');
-        console.log(response)
+        const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}`);
         setData(response.data); // Assuming `response.data` is an array of services
         setIsLoader(false);
       } catch (error) {
@@ -26,7 +27,7 @@ const UserList = () => {
     };
 
     fetchData();
-  }, []);
+  }, [userType, page]);
 
   const viewUser = (id) => {
     navigate(`/user-details/${id}`);
@@ -34,18 +35,25 @@ const UserList = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <div className="max-w-full overflow-x-auto">
-        {alertVisible && (
-          <div
-            id="copyModal"
-            role="dialog"
-            className="address_alert_copy custom_alert"
-            style={{ zIndex: '200017', transition: '.3s all' }}
+      <div className="max-w-full ">
+        <div className="flex justify-between items-center mb-4">
+          <select
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
+            className="border p-2 rounded"
           >
+            <option value="driver">Driver</option>
+            <option value="normal">Normal</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        {alertVisible && (
+          <div className="address_alert_copy custom_alert" style={{ zIndex: '200017', transition: '.3s all' }}>
             <div className="van-toast__text">{alertMessage}</div>
           </div>
         )}
-        {isLoader ? <Loader /> : null}
+        {isLoader && <Loader />}
 
         <table className="w-full table-auto">
           <thead>
@@ -153,6 +161,21 @@ const UserList = () => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-between items-center mt-4">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            className="px-4 py-2 bg-gray-950 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

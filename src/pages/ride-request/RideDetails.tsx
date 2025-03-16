@@ -10,18 +10,18 @@ const RideDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertVisible, setAlertVisible] = useState(false);
-  
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertVisible, setAlertVisible] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`api/ridesharing/${id}`);
+        const response = await axios.get(`api/ride-request/${id}`);
         console.log(response);
-        
-        setData(response.data.data);
+
+        setData(response.data);
         setIsLoader(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -42,7 +42,6 @@ const RideDetails = () => {
           id: id,
         },
       });
-
       // Display success message
       setAlertMessage(response.data.message || 'Approved successfully');
       setAlertVisible(true);
@@ -78,16 +77,16 @@ const RideDetails = () => {
       </div>
 
       {alertVisible && (
-          <div
-            id="copyModal"
-            role="dialog"
-            className="address_alert_copy custom_alert"
-            style={{ zIndex: '200017', transition: '.3s all' }}
-          >
-            <div className="van-toast__text">{alertMessage}</div>
-          </div>
-        )}
-        {isLoader ? <Loader /> : null}
+        <div
+          id="copyModal"
+          role="dialog"
+          className="address_alert_copy custom_alert"
+          style={{ zIndex: '200017', transition: '.3s all' }}
+        >
+          <div className="van-toast__text">{alertMessage}</div>
+        </div>
+      )}
+      {isLoader ? <Loader /> : null}
 
       {/* User Details Section */}
       <div className="row mb-4">
@@ -156,14 +155,14 @@ const RideDetails = () => {
       <div className="row">
         <div className="col">
           <h5>Bids</h5>
-          {data.bids.map((bid, index) => (
+          {JSON.parse(data?.bids || "[]").map((bid, index) => (
             <div className="card mb-3 shadow-sm" key={index}>
               <div className="card-body">
                 <img
                   src={bid.profilePic}
                   alt={bid.name}
                   className="rounded-circle me-3"
-                  style={{ width: '50px', height: '50px' }}
+                  style={{ width: "50px", height: "50px" }}
                 />
                 <strong>{bid.name}</strong>
                 <p>Phone: {bid.number}</p>
@@ -173,6 +172,7 @@ const RideDetails = () => {
               </div>
             </div>
           ))}
+
         </div>
       </div>
 

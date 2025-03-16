@@ -32,11 +32,11 @@ const ServiceCreate: React.FC = () => {
 
       const response = await axios.post('/api/services', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
-
-      setAlertMessage(response.data.message || 'Something went wrong');
+      console.log(response);
+      
       setAlertVisible(true);
 
       // Hide the alert after 2 seconds
@@ -45,7 +45,7 @@ const ServiceCreate: React.FC = () => {
       }, 2000);
 
       // Navigate to another page if needed
-      if (response.data.success) {
+      if (response.status === 201) {
         navigate('/service/list');
       }
     } catch (error) {

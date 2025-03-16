@@ -34,6 +34,8 @@ import TopupList from './pages/topup/TopupList';
 import RideEdit from './pages/vehicle/RideEdit';
 
 import axios from 'axios';
+import ServiceEdit from './pages/service/ServiceEdit';
+import TypeDetails from './pages/vehicle/typeDetails';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,6 +50,7 @@ function App() {
   }, []);
   // axios.defaults.baseURL = 'https://localhost/ikbarvai/transport/'; // local
   axios.defaults.baseURL = "https://hoishailhadaapi.tokhon.com/";
+  // axios.defaults.baseURL = "http://localhost:3000/";
   const token = localStorage.getItem('token');
   axios.defaults.headers.common['Authorization'] = token
     ? `Bearer ${token}`
@@ -112,6 +115,17 @@ function App() {
             </>
           }
         />
+        <Route
+          path="/service/:id"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <ServiceEdit />
+              </PrivateRoute>
+            </>
+          }
+        />
 
         <Route
           path="/vehicle-type/list"
@@ -131,6 +145,17 @@ function App() {
               <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <AddType />
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
+          path="/vehicle-type/:id"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <TypeDetails />
               </PrivateRoute>
             </>
           }

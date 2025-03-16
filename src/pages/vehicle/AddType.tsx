@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../extra/loader';
 
-
-
-
 const AddType = () => {
 
   const navigate = useNavigate();
@@ -36,13 +33,11 @@ const AddType = () => {
     try {
       setIsLoader(true);
 
-      const response = await axios.post('/api/vehicle/store', formData, {
+      const response = await axios.post('/api/vehicle-types', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
-
-      setAlertMessage(response.data.message || 'Something went wrong');
       setAlertVisible(true);
 
       // Hide the alert after 2 seconds
@@ -51,7 +46,7 @@ const AddType = () => {
       }, 2000);
 
       // Navigate to another page if needed
-      if (response.data.success) {
+      if (response.status === 201) {
         navigate('/vehicle-type/list');
       }
     } catch (error) {

@@ -11,6 +11,7 @@ const UserEdit = () => {
 
   const [formData, setFormData] = useState({
     is_verified: false,
+    wallet_balance: '',
   });
 
   const navigate = useNavigate();
@@ -20,10 +21,11 @@ const UserEdit = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`api/user/${id}`);
+        const response = await axios.get(`/api/user/${id}`);
         setData(response.data);
         setFormData({
-          is_verified: response.data.is_verified, // Ensure pre-filled data matches structure
+          is_verified: response.data.is_verified,
+          wallet_balance: response.data.wallet_balance,
         });
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -35,11 +37,17 @@ const UserEdit = () => {
     fetchData();
   }, [id]);
 
+  const setAlert = (message) => {
+    setAlertMessage(message);
+    setAlertVisible(true);
+    setTimeout(() => setAlertVisible(false), 2000);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value === '1', // Convert '1' and '0' to boolean for `is_verified`
+      [name]: name === 'is_verified' ? value === '1' : value,
     }));
   };
 
@@ -49,7 +57,7 @@ const UserEdit = () => {
 
     try {
       const response = await axios.put(
-        `api/user/${id}`,
+        `/api/user/${id}`,
         formData,
         {
           headers: {
@@ -58,21 +66,14 @@ const UserEdit = () => {
         }
       );
 
-      setAlertMessage(response.data.message || 'User updated successfully');
-      setAlertVisible(true);
-
-      setTimeout(() => setAlertVisible(false), 2000);
+      setAlert(response.data.message || 'User updated successfully');
 
       if (response.data.success) {
-        // Uncomment this line to navigate back to the user list
         navigate('/users');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      setAlertMessage('An error occurred while updating the user.');
-      setAlertVisible(true);
-
-      setTimeout(() => setAlertVisible(false), 2000);
+      setAlert(error.response?.data?.message || 'An error occurred while updating the user.');
     } finally {
       setIsLoader(false);
     }
@@ -116,6 +117,19 @@ const UserEdit = () => {
           </div>
           <div className="flex flex-col gap-5.5 p-6.5">
             <form onSubmit={handleSubmit}>
+              <div>
+                <label className="mb-3 block text-black dark:text-white">
+                  Balance
+                </label>
+                <input
+                  type="text"
+                  name="wallet_balance"
+                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  value={formData.wallet_balance}
+                  onChange={handleChange}
+                  placeholder="Balance"
+                />
+              </div>
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Verified

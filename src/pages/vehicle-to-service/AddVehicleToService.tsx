@@ -67,7 +67,8 @@ const AddVehicleToService = () => {
       setIsLoader(true);
       const response = await axios.post('/api/services/vehicles', data);
       setAlertVisible(true);
-  
+      console.log(response);
+      
       setTimeout(() => {
         setAlertVisible(false);
       }, 2000);
