@@ -86,7 +86,7 @@ const Profile = () => {
               </label>
             </div>
           </div>
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
               Danish Heilium
             </h3>
@@ -277,7 +277,7 @@ const Profile = () => {
                 </Link>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
