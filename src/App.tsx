@@ -35,7 +35,7 @@ import RideEdit from './pages/vehicle/RideEdit';
 
 import axios from 'axios';
 import ServiceEdit from './pages/service/ServiceEdit';
-import TypeDetails from './pages/vehicle/typeDetails';
+import TypeDetails from "./pages/vehicle/TypeDetails";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
