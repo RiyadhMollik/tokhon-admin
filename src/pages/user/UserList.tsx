@@ -18,7 +18,8 @@ const UserList = () => {
       setIsLoader(true);
       try {
         const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}`);
-        setData(response.data); // Assuming `response.data` is an array of services
+        setData(response.data.users); // Assuming `response.data` is an array of services
+        setTotalPages(response.data.pagination.totalPages)
         setIsLoader(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -32,7 +33,9 @@ const UserList = () => {
   const viewUser = (id) => {
     navigate(`/user-details/${id}`);
   };
-
+  const handlePageChange = (page) => {
+    setPage(page);
+  };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full ">
@@ -161,17 +164,76 @@ const UserList = () => {
             ))}
           </tbody>
         </table>
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-center mt-4 gap-4">
           <button
+            className={`px-4 py-2 ${page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-l`}
+            onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
-            onClick={() => setPage((prev) => prev - 1)}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
           >
             Previous
           </button>
+
+          {/* Page numbers */}
+          <div className="flex items-center space-x-2">
+            {/* Show the first page */}
+            {page > 3 && (
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => handlePageChange(1)}
+              >
+                1
+              </button>
+            )}
+
+            {/* Show "..." if there are hidden pages between first and current */}
+            {page > 3 && (
+              <span className="px-4 py-2 text-gray-500">...</span>
+            )}
+
+            {/* Show current page - 1, current page, and current page + 1 */}
+            {page > 1 && (
+              <button
+                className={`px-4 py-2 ${page === page - 1 ? 'bg-blue-500 text-white' : 'bg-gray-300 '} rounded`}
+                onClick={() => handlePageChange(page - 1)}
+              >
+                {page - 1}
+              </button>
+            )}
+            <button
+              className={`px-4 py-2 ${page === page ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </button>
+            {page < totalPages && (
+              <button
+                className={`px-4 py-2 ${page === page + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+                onClick={() => handlePageChange(page + 1)}
+              >
+                {page + 1}
+              </button>
+            )}
+
+            {/* Show "..." if there are hidden pages between last and current */}
+            {page < totalPages - 2 && (
+              <span className="px-4 py-2 text-gray-500">...</span>
+            )}
+
+            {/* Show the last page */}
+            {page < totalPages - 2 && (
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => handlePageChange(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+          </div>
+
           <button
-            onClick={() => setPage((prev) => prev + 1)}
-            className="px-4 py-2 bg-gray-950 rounded disabled:opacity-50"
+            className={`px-4 py-2 ${page === totalPages ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-r`}
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page === totalPages}
           >
             Next
           </button>

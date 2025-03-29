@@ -7,29 +7,42 @@ const RideRequestList = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
-    const navigate = useNavigate();
-
   const [data, setData] = useState([]);
   const [status, setStatus] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(10); // Number of items per page
 
-  // Fetch data function
-  const fetchData = async (statusFilter = '') => {
+  const navigate = useNavigate();
+
+  // Fetch data function with pagination
+  const fetchData = async (statusFilter = '', page = 1) => {
     setIsLoader(true);
     try {
       const response = await axios.get('api/ride-requests', {
-        params: { status: statusFilter },
+        params: {
+          status: statusFilter,
+          page: page,
+          limit: limit,
+        },
       });
+      console.log(response);
+
       setData(response.data.data || []);
+      setTotalPages(response.data.pagination.totalPages);
+      setCurrentPage(response.data.pagination.currentPage);
       setIsLoader(false);
     } catch (error) {
       console.error('Error fetching data:', error);
       setIsLoader(false);
     }
   };
+
   // Initial data fetch
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(status, currentPage);
+  }, [status, currentPage]);
+
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -71,6 +84,10 @@ const RideRequestList = () => {
 
   const viewRide = (id) => {
     navigate(`/ride-details/${id}`);
+  };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchData(status, page);
   };
 
   return (
@@ -165,11 +182,10 @@ const RideRequestList = () => {
                       </button>
                     ) : (
                       <p
-                        className={`${
-                          item.status === 'complete'
-                            ? 'text-green-500'
-                            : 'text-black'
-                        } dark:text-white`}
+                        className={`${item.status === 'complete'
+                          ? 'text-green-500'
+                          : 'text-black'
+                          } dark:text-white`}
                       >
                         {item.status}
                       </p>
@@ -205,6 +221,82 @@ const RideRequestList = () => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-center mt-4 gap-4">
+          <button
+            className={`px-4 py-2 ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-l`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+
+          {/* Page numbers */}
+          <div className="flex items-center space-x-2">
+            {/* Show the first page */}
+            {currentPage > 3 && (
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => handlePageChange(1)}
+              >
+                1
+              </button>
+            )}
+
+            {/* Show "..." if there are hidden pages between first and current */}
+            {currentPage > 3 && (
+              <span className="px-4 py-2 text-gray-500">...</span>
+            )}
+
+            {/* Show current page - 1, current page, and current page + 1 */}
+            {currentPage > 1 && (
+              <button
+                className={`px-4 py-2 ${currentPage === currentPage - 1 ? 'bg-blue-500 text-white' : 'bg-gray-300 '} rounded`}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                {currentPage - 1}
+              </button>
+            )}
+            <button
+              className={`px-4 py-2 ${currentPage === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+              onClick={() => handlePageChange(currentPage)}
+            >
+              {currentPage}
+            </button>
+            {currentPage < totalPages && (
+              <button
+                className={`px-4 py-2 ${currentPage === currentPage + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                {currentPage + 1}
+              </button>
+            )}
+
+            {/* Show "..." if there are hidden pages between last and current */}
+            {currentPage < totalPages - 2 && (
+              <span className="px-4 py-2 text-gray-500">...</span>
+            )}
+
+            {/* Show the last page */}
+            {currentPage < totalPages - 2 && (
+              <button
+                className="px-4 py-2 bg-gray-300 rounded"
+                onClick={() => handlePageChange(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+          </div>
+
+          <button
+            className={`px-4 py-2 ${currentPage === totalPages ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-r`}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+
+
       </div>
     </div>
   );

@@ -19,13 +19,15 @@ const AddType = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+    const extraOptions ={
+      capacity,
+      features
+    }
     // Create a FormData object to gather form data
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
-    formData.append('features', features);
-    formData.append('capacity', capacity);
+    formData.append('extraOptions', JSON.stringify(extraOptions)); 
     if (image) {
       formData.append('image', image);
     }
@@ -35,7 +37,7 @@ const AddType = () => {
 
       const response = await axios.post('/api/vehicle-types', formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
       setAlertVisible(true);

@@ -8,17 +8,10 @@ const RideEdit = () => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
   const [data, setData] = useState(null);
+  const [document, setDocument] = useState(null)
+  const [vehicleDetails , setVehicleDetails] = useState(null)
+  const [status , setStatus] = useState('pending')
 
-  const [formData, setFormData] = useState({
-    status: 'pending',
-    drivingLicense: null,
-    nid: null,
-    vehiclePicFront: null,
-    color: null,
-    year: null,
-    model: null,
-    number: null,
-  });
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -27,20 +20,12 @@ const RideEdit = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get('api/driver-vehicles', {
-          params: { id: id },
-        });
-        setData(response.data.data);
-        setFormData({
-          status: response.data.data.status,
-          drivingLicense: response.data.data.documents.drivingLicense,
-          nid: response.data.data.documents.nid,
-          vehiclePicFront: response.data.data.documents.vehiclePicFront,
-          color: response.data.data.vehicleDetails.color,
-          year: response.data.data.vehicleDetails.year,
-          model: response.data.data.vehicleDetails.model,
-          number: response.data.data.vehicleDetails.number,
-        });
+        const response = await axios.get(`api/driver-vehicles/${id}`);
+        setData(response.data);
+        console.log(response.data);
+        setDocument(JSON.parse(response.data.documents))
+        setVehicleDetails(JSON.parse(response.data.vehicleDetails))
+        setStatus(response.data.status)
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -50,24 +35,41 @@ const RideEdit = () => {
 
     fetchData();
   }, [id]);
-
+  console.log(document);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
+    setVehicleDetails((prevState) => ({
       ...prevState,
       [name]: value, // Update the field dynamically
     }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const { name, files } = e.target;
     if (files && files[0]) {
       const file = files[0];
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: file, // Store the file object
-        [`${name}Preview`]: URL.createObjectURL(file), // Store the preview URL
-      }));
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        // Upload the file using Axios
+        const response = await axios.post("/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (response.data.imageUrl) {
+          setDocument((prevState) => ({
+            ...prevState,
+            [name]: response.data.imageUrl, // Store the uploaded image URL
+          }));
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
     }
   };
 
@@ -76,21 +78,14 @@ const RideEdit = () => {
     setIsLoader(true);
 
     try {
-      // Create a new FormData object
-      const formDataObj = new FormData();
-
-      // Append each field from the formData state to the FormData object
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataObj.append(key, value);
-      });
-
       // Make the PUT request with the FormData object
-      const response = await axios.put(`/api/driver-vehicles/${id}`, formDataObj, {
+      const response = await axios.put(`/api/driver-vehicles/${id}`, {status, vehicleDetails ,document}, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      
+
+      console.log(response);
       
       // Handle the response
       setAlertVisible(true);
@@ -105,8 +100,8 @@ const RideEdit = () => {
       // Handle errors
       console.error('Error submitting form:', error);
       setAlertMessage(
-        error.response?.data?.message ||
-          'An error occurred while updating the user.',
+        error?.response?.data?.message ||
+        'An error occurred while updating the user.',
       );
       setAlertVisible(true);
 
@@ -166,9 +161,9 @@ const RideEdit = () => {
                   name="status"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   value={
-                    formData.status === 'verified' ? 'verified' : 'pending'
+                    status === 'verified' ? 'verified' : 'pending'
                   } // Conditional value
-                  onChange={handleChange}
+                  onChange={(e)=>setStatus(e.target.value)}
                 >
                   <option value="pending">False</option>
                   <option value="verified">True</option>
@@ -193,13 +188,12 @@ const RideEdit = () => {
                   </label>
                   <a
                     href={
-                      formData.drivingLicensePreview || formData.drivingLicense
+                      document?.drivingLicense
                     }
                   >
                     <img
                       src={
-                        formData.drivingLicensePreview ||
-                        formData.drivingLicense
+                        document?.drivingLicense
                       }
                       alt="Driving License Preview"
                       width={100}
@@ -228,9 +222,9 @@ const RideEdit = () => {
                   <label className="mb-2.5 block text-black dark:text-white">
                     NID
                   </label>
-                  <a href={formData.nidPreview || formData.nid}>
+                  <a href={document?.nid}>
                     <img
-                      src={formData.nidPreview || formData.nid}
+                      src={document?.nid}
                       width={100}
                       height={10}
                     ></img>
@@ -259,14 +253,12 @@ const RideEdit = () => {
                   </label>
                   <a
                     href={
-                      formData.vehiclePicFrontPreview ||
-                      formData.vehiclePicFront
+                      document?.vehiclePicFront
                     }
                   >
                     <img
                       src={
-                        formData.vehiclePicFrontPreview ||
-                        formData.vehiclePicFront
+                        document?.vehiclePicFront
                       }
                       width={100}
                       height={10}
@@ -287,7 +279,7 @@ const RideEdit = () => {
                     placeholder="Enter Color"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     onChange={handleChange}
-                    value={formData.color}
+                    value={vehicleDetails?.color}
                   />
                 </div>
 
@@ -302,7 +294,7 @@ const RideEdit = () => {
                     placeholder="Enter Model"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     onChange={handleChange}
-                    value={formData.model}
+                    value={vehicleDetails?.model}
                   />
                 </div>
               </div>
@@ -318,7 +310,7 @@ const RideEdit = () => {
                     placeholder="Enter year"
                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     onChange={handleChange}
-                    value={formData.year}
+                    value={vehicleDetails?.year}
                   />
                 </div>
               </div>

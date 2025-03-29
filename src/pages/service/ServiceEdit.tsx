@@ -51,7 +51,7 @@ const ServiceEdit: React.FC = () => {
   
       const response = await axios.put(`/api/services/${id}`, formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
   

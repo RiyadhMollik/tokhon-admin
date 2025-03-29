@@ -23,8 +23,22 @@ const TypeDetails = () => {
                 const vehicleType = response.data;
                 setName(vehicleType.name);
                 setDescription(vehicleType.description);
-                setFeature(vehicleType.extraOptions);
-                setCapacity(vehicleType.capacity);
+                console.log("Parsed vehicleType.extraOptions:", JSON.parse(vehicleType.extraOptions));
+
+                const parsedOptions = typeof vehicleType.extraOptions === "string"
+                    ? JSON.parse(vehicleType.extraOptions)
+                    : vehicleType.extraOptions;
+
+                console.log("Parsed vehicleType.extraOptions:", parsedOptions);
+
+                const featuresValue = parsedOptions.features ? parsedOptions.features.split(",") : [];  // Split string into an array
+
+                console.log(featuresValue);  // This should now log an array of features
+
+
+
+
+                setCapacity(JSON.parse(vehicleType.extraOptions).capacity);
 
             } catch (error) {
                 console.error("Error fetching vehicle type:", error);
@@ -62,7 +76,7 @@ const TypeDetails = () => {
                 setAlertVisible(false);
             }, 2000);
             console.log(response);
-            
+
             // Navigate to another page if needed
             if (response.status === 200) {
                 navigate('/vehicle-type/list');
@@ -79,7 +93,6 @@ const TypeDetails = () => {
             setIsLoader(false);
         }
     };
-
     return (
         <>
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

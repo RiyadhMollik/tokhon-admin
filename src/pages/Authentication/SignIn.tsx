@@ -9,8 +9,8 @@ import '../../css/message.css';
 import Loader from '../extra/loader';
 
 const SignIn: React.FC = () => {
-  const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('ridestart');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState('');
