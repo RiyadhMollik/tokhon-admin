@@ -23,21 +23,7 @@ const TypeDetails = () => {
                 const vehicleType = response.data;
                 setName(vehicleType.name);
                 setDescription(vehicleType.description);
-                console.log("Parsed vehicleType.extraOptions:", JSON.parse(vehicleType.extraOptions));
-
-                const parsedOptions = typeof vehicleType.extraOptions === "string"
-                    ? JSON.parse(vehicleType.extraOptions)
-                    : vehicleType.extraOptions;
-
-                console.log("Parsed vehicleType.extraOptions:", parsedOptions);
-
-                const featuresValue = parsedOptions.features ? parsedOptions.features.split(",") : [];  // Split string into an array
-
-                console.log(featuresValue);  // This should now log an array of features
-
-
-
-
+                setFeature(JSON.parse(vehicleType.extraOptions).features)
                 setCapacity(JSON.parse(vehicleType.extraOptions).capacity);
 
             } catch (error) {
@@ -51,12 +37,19 @@ const TypeDetails = () => {
     }, [id]);
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        const dateTimeRequired = true;
+        const productTypeRequired = true;
+        const extraOptions = {
+            capacity,
+            features,
+            dateTimeRequired,
+            productTypeRequired
+        }
         // Create a FormData object to gather form data
         const formData = new FormData();
         formData.append('name', name);
         formData.append('description', description);
-        formData.append('features', features);
-        formData.append('capacity', capacity);
+        formData.append('extraOptions', JSON.stringify(extraOptions));
         if (image) {
             formData.append('image', image);
         }
@@ -64,7 +57,7 @@ const TypeDetails = () => {
         try {
             setIsLoader(true);
 
-            const response = await axios.put(`/api/vehicle-types/${id}`, formData, {
+            const response = await axios.patch(`/api/vehicle-types/${id}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

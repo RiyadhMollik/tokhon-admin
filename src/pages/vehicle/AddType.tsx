@@ -16,18 +16,21 @@ const AddType = () => {
   const [features, setFeature] = useState('');
   const [capacity, setCapacity] = useState('');
   const [image, setImage] = useState<File | null>(null);
-
+  const [dateTimeRequired, setDateTimeRequired] = useState(false)
+  const [productTypeRequired, setProductTypeRequired] = useState(false)
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const extraOptions ={
+    const extraOptions = {
       capacity,
-      features
+      features,
+      dateTimeRequired,
+      productTypeRequired
     }
     // Create a FormData object to gather form data
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
-    formData.append('extraOptions', JSON.stringify(extraOptions)); 
+    formData.append('extraOptions', JSON.stringify(extraOptions));
     if (image) {
       formData.append('image', image);
     }
@@ -160,6 +163,20 @@ const AddType = () => {
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                 />
+              </div>
+              <div>
+                <label className="mb-3 block text-black dark:text-white">
+                  Date Time Required
+                </label>
+                <select
+                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  value={dateTimeRequired}
+                  onChange={(e) => setOutsideCity(e.target.value)}
+                >
+                  <option value="">Please select</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
               </div>
 
               <div className="flex justify-center">
