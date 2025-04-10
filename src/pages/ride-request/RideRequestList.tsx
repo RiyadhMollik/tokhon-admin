@@ -12,11 +12,36 @@ const RideRequestList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10); // Number of items per page
+  const [search, setSearch] = useState('');
 
   const navigate = useNavigate();
+  useEffect(() => {
+    const savedStatus = localStorage.getItem("status");
+    const savedTimestamp = localStorage.getItem("statusTimestamp");
 
+    if (savedStatus && savedTimestamp) {
+      const currentTime = new Date().getTime();
+      // Check if the saved timestamp is within the last 1 hour (3600000 milliseconds)
+      if (currentTime - savedTimestamp < 3600000) {
+        setStatus(savedStatus);
+      } else {
+        // Clear localStorage if the saved time is expired
+        localStorage.removeItem("status");
+        localStorage.removeItem("statusTimestamp");
+      }
+    }
+  }, []);
+
+  const handleStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus);
+
+    // Save the status and current timestamp to localStorage
+    localStorage.setItem("status", newStatus);
+    localStorage.setItem("statusTimestamp", new Date().getTime());
+  };
   // Fetch data function with pagination
-  const fetchData = async (statusFilter = '', page = 1) => {
+  const fetchData = async (statusFilter = '', page = 1 , search='') => {
     setIsLoader(true);
     try {
       const response = await axios.get('api/ride-requests', {
@@ -24,6 +49,7 @@ const RideRequestList = () => {
           status: statusFilter,
           page: page,
           limit: limit,
+          search: search
         },
       });
       console.log(response);
@@ -40,8 +66,8 @@ const RideRequestList = () => {
 
   // Initial data fetch
   useEffect(() => {
-    fetchData(status, currentPage);
-  }, [status, currentPage]);
+    fetchData(status, currentPage , search);
+  }, [status, currentPage ,search]);
 
 
   const handleSubmit = (e) => {
@@ -89,6 +115,20 @@ const RideRequestList = () => {
     setCurrentPage(page);
     fetchData(status, page);
   };
+  function formatDateTime(dateTime) {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    };
+
+    const date = new Date(dateTime);
+    return date.toLocaleString('en-US', options);
+  }
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -114,7 +154,7 @@ const RideRequestList = () => {
             className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-white dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             name="status"
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={handleStatusChange}
             aria-label="Default select example"
           >
             <option value="">All</option>
@@ -122,19 +162,22 @@ const RideRequestList = () => {
             <option value="ride_completed">Verified</option>
             <option value="bidding">Bidding</option>
           </select>
-
-          <button
+          <input
+            type="text"
             name="search"
-            type="submit"
-            className="flex justify-center rounded bg-primary px-6 py-3 font-medium text-gray hover:bg-opacity-90"
-          >
-            Search
-          </button>
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search"
+            className="flex justify-center rounded border border-gray px-6 py-3 font-medium text-black hover:bg-opacity-90"
+          />
         </form>
         <br></br>
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-2 text-left dark:bg-meta-4">
+              <th className=" py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
+                #
+              </th>
               <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                 Name
               </th>
@@ -147,6 +190,9 @@ const RideRequestList = () => {
               <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                 Status
               </th>
+              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                Date and Time
+              </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white">
                 Actions
               </th>
@@ -155,6 +201,11 @@ const RideRequestList = () => {
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
+                <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                  <h5 className="font-medium text-black dark:text-white">
+                    {index + 1}
+                  </h5>
+                </td>
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
                     {item.user_name}
@@ -192,7 +243,11 @@ const RideRequestList = () => {
                     )}
                   </div>
                 </td>
-
+                <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                  <p className="text-black dark:text-white">
+                    {formatDateTime(item.created_at)}
+                  </p>
+                </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
                     <button className="hover:text-primary" onClick={() => viewRide(item.id)}>

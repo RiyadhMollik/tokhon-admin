@@ -9,8 +9,7 @@ const AddVehicleToService = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [isLoader, setIsLoader] = useState(false);
-
-
+  const [commissionType, setCommissionType] = useState('');
   const [serviceId, setServiceId] = useState('');
   const [vehicleTypeId, setVehicleTypeId] = useState('');
   const [vehicleName, setVehicleName] = useState('');
@@ -27,7 +26,7 @@ const AddVehicleToService = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('api/services');   
+        const response = await axios.get('api/services');
         setServiceData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -40,7 +39,7 @@ const AddVehicleToService = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('api/vehicle-types');   
+        const response = await axios.get('api/vehicle-types');
         setVehicleData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -60,27 +59,28 @@ const AddVehicleToService = () => {
       commission,
       enabled,
       capacity,
-      outsideCity
+      outsideCity,
+      commissionType
     };
-  
+
     try {
       setIsLoader(true);
       const response = await axios.post('/api/services/vehicles', data);
       setAlertVisible(true);
       console.log(response);
-      
+
       setTimeout(() => {
         setAlertVisible(false);
       }, 2000);
-  
+
       if (response.status === 201) {
-        navigate('/vehicle-type/list');
+        navigate('/vts/list');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
       setAlertMessage('An error occurred while creating the service.');
       setAlertVisible(true);
-  
+
       setTimeout(() => {
         setAlertVisible(false);
       }, 2000);
@@ -88,7 +88,7 @@ const AddVehicleToService = () => {
       setIsLoader(false);
     }
   };
-  
+
 
   return (
     <>
@@ -192,19 +192,36 @@ const AddVehicleToService = () => {
                 />
               </div>
 
-              <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Commission
-                </label>
-                <input
-                  type="text"
-                  placeholder="Commission"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  value={commission}
-                  onChange={(e) => setCommission(e.target.value)}
-                />
-              </div>
+              <div className='flex flex-col md:flex-row lg:flex-row w-full items-center gap-3'>
+                <div className='w-full'>
+                  <label className="mb-3 block text-black dark:text-white">
+                    Commission Type
+                  </label>
+                  <select
+                    value={commissionType}
+                    onChange={(e) => setCommissionType(e.target.value)}
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black dark:text-white outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                  >
+                    <option value="">Select Type</option>
+                    <option value="percentage">Percentage</option>
+                    <option value="amount">Amount</option>
+                  </select>
+                </div>
 
+                <div className="w-full">
+                  <label className="mb-3 block text-black dark:text-white">
+                    Commission {commissionType === 'percentage' ? '(%)' : commissionType === 'amount' ? '(TK)' : ''}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder={`Enter commission ${commissionType === 'percentage' ? '(%)' : '(TK)'}`}
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    value={commission}
+                    onChange={(e) => setCommission(e.target.value)}
+                    disabled={!commissionType}
+                  />
+                </div>
+              </div>
               <div>
                 <label className="mb-3 block text-black dark:text-white">
                   Enabled
@@ -222,7 +239,7 @@ const AddVehicleToService = () => {
 
               <div>
                 <label className="mb-3 block text-black dark:text-white">
-                Capacity
+                  Capacity
                 </label>
                 <input
                   type="text"

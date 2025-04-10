@@ -21,7 +21,7 @@ const VehicleDetails = () => {
       try {
         const response = await axios.get(`api/driver-vehicles/${id}`);
         setData(response.data); // Set the full response data
-        console.log(response.data);
+        console.log(response);
         setExtra(JSON.parse(response.data.extraOptions))
         setIsLoader(false);
       } catch (error) {
@@ -95,7 +95,7 @@ const VehicleDetails = () => {
             <h6 className="text-lg font-semibold text-gray-700">Extra Options:</h6>
             <p className="text-gray-600">Capacity: {extra.capacity}</p>
             <ul className="list-disc list-inside text-gray-600">
-              {extra.features.map((feature, index) => (
+              {extra?.features?.map((feature, index) => (
                 <li key={index}>{feature}</li>
               ))}
             </ul>

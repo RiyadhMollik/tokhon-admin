@@ -13,11 +13,12 @@ const UserList = () => {
   const [userType, setUserType] = useState('normal');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
   useEffect(() => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}`);
+        const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}&search=${search}`);
         setData(response.data.users); // Assuming `response.data` is an array of services
         setTotalPages(response.data.pagination.totalPages)
         setIsLoader(false);
@@ -28,7 +29,7 @@ const UserList = () => {
     };
 
     fetchData();
-  }, [userType, page]);
+  }, [userType, page,search]);
 
   const viewUser = (id) => {
     navigate(`/user-details/${id}`);
@@ -36,6 +37,20 @@ const UserList = () => {
   const handlePageChange = (page) => {
     setPage(page);
   };
+  function formatDateTime(dateTime) {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    };
+
+    const date = new Date(dateTime);
+    return date.toLocaleString('en-US', options);
+  }
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full ">
@@ -45,10 +60,16 @@ const UserList = () => {
             onChange={(e) => setUserType(e.target.value)}
             className="border p-2 rounded"
           >
-            <option value="driver">Driver</option>
             <option value="normal">Normal</option>
             <option value="admin">Admin</option>
           </select>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border p-2 rounded"
+          />
         </div>
 
         {alertVisible && (
@@ -61,23 +82,26 @@ const UserList = () => {
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-2 text-left dark:bg-meta-4">
-              <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
+              <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                 Name
               </th>
-              <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
                 Email
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
                 Phone
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
                 Address
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
                 Gender
               </th>
-              <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
                 Status
+              </th>
+              <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
+                Date and Time
               </th>
               <th className="py-4 px-4 font-medium text-black dark:text-white">
                 Actions
@@ -109,6 +133,11 @@ const UserList = () => {
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <p className="text-black dark:text-white">
                     {item.is_verified == false ? 'Not-Verified' : 'Verified'}
+                  </p>
+                </td>
+                <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                  <p className="text-black dark:text-white">
+                    {item.created_at && formatDateTime(item.created_at)}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">

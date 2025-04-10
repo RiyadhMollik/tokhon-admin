@@ -36,6 +36,10 @@ import RideEdit from './pages/vehicle/RideEdit';
 import axios from 'axios';
 import ServiceEdit from './pages/service/ServiceEdit';
 import TypeDetails from "./pages/vehicle/TypeDetails";
+import VehicleToServiceList from './pages/vehicle-to-service/VehicleToServiceList';
+import EditVehicleToService from './pages/vehicle-to-service/EditVehicleToService';
+import NotificationResult from './pages/NotificationResult/NotificationResult';
+import GlobalSetting from './pages/GlobalSetting/GlobalSetting';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -172,6 +176,28 @@ function App() {
           }
         />
         <Route
+          path="/vts/list"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <VehicleToServiceList />
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
+          path="/vts/:id"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <EditVehicleToService />
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
           path="/users"
           element={
             <>
@@ -285,6 +311,24 @@ function App() {
             <>
               <PageTitle title="Profile | Tokhon" />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/messege"
+          element={
+            <>
+              <PageTitle title="Profile | Tokhon" />
+              <NotificationResult/>
+            </>
+          }
+        />
+        <Route
+          path="/global-setting"
+          element={
+            <>
+              <PageTitle title="Profile | Tokhon" />
+              <GlobalSetting />
             </>
           }
         />
