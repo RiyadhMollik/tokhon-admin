@@ -16,6 +16,8 @@ const TypeDetails = () => {
     const [features, setFeature] = useState('');
     const [capacity, setCapacity] = useState('');
     const [image, setImage] = useState<File | null>(null);
+    const [dateTimeRequired, setDateTimeRequired] = useState<boolean>(false);
+    const [productTypeRequired, setProductTypeRequired] = useState<boolean>(false);
     useEffect(() => {
         const fetchVehicleType = async () => {
             try {
@@ -25,6 +27,8 @@ const TypeDetails = () => {
                 setDescription(vehicleType.description);
                 setFeature(JSON.parse(vehicleType.extraOptions).features)
                 setCapacity(JSON.parse(vehicleType.extraOptions).capacity);
+                setDateTimeRequired(JSON.parse(vehicleType.extraOptions).dateTimeRequired);
+                setProductTypeRequired(JSON.parse(vehicleType.extraOptions).productTypeRequired);
 
             } catch (error) {
                 console.error("Error fetching vehicle type:", error);
@@ -37,8 +41,6 @@ const TypeDetails = () => {
     }, [id]);
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const dateTimeRequired = true;
-        const productTypeRequired = true;
         const extraOptions = {
             capacity,
             features,
@@ -183,7 +185,34 @@ const TypeDetails = () => {
                                     onChange={(e) => setCapacity(e.target.value)}
                                 />
                             </div>
-
+                            <div>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Date Time Required
+                                </label>
+                                <select
+                                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    value={dateTimeRequired.toString()}
+                                    onChange={(e) => setDateTimeRequired(e.target.value === "true")}
+                                >
+                                    <option value="">Please select</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Product Type Required
+                                </label>
+                                <select
+                                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    value={productTypeRequired.toString()}
+                                    onChange={(e) => setProductTypeRequired(e.target.value === "true")}
+                                >
+                                    <option value="">Please select</option>
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
                             <div className="flex justify-center">
                                 <button
                                     type="submit"

@@ -6,6 +6,7 @@ const NotificationResult = () => {
   const [body, setBody] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
 
   const sendNotification = async () => {
     setLoading(true);
@@ -13,6 +14,7 @@ const NotificationResult = () => {
       const response = await axios.post('/send-notification', {
         title,
         body,
+        user_type: selectedOption,
       });
 
       if (response.data.success) {
@@ -35,6 +37,19 @@ const NotificationResult = () => {
     <div className="max-w-md mx-auto mt-10 p-6 rounded-2xl shadow-lg bg-white border border-gray-200">
       <h1 className="text-xl font-semibold mb-4 text-center">Send Notification</h1>
 
+      <div className="mb-4">
+        <label className="block mb-1 text-sm font-medium text-gray-700">Select Option</label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={selectedOption}
+          onChange={(e) => setSelectedOption(e.target.value)}
+        >
+          <option value="">Select an option</option>
+          <option value="driver">User</option>
+          <option value="normaluser">Driver</option>
+          <option value="all">All</option>
+        </select>
+      </div>
       <div className="mb-4">
         <label className="block mb-1 text-sm font-medium text-gray-700">Title</label>
         <input

@@ -16,8 +16,8 @@ const AddType = () => {
   const [features, setFeature] = useState('');
   const [capacity, setCapacity] = useState('');
   const [image, setImage] = useState<File | null>(null);
-  const [dateTimeRequired, setDateTimeRequired] = useState(false)
-  const [productTypeRequired, setProductTypeRequired] = useState(false)
+  const [dateTimeRequired, setDateTimeRequired] = useState<boolean>(false);
+  const [productTypeRequired, setProductTypeRequired] =  useState<boolean>(false);
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const extraOptions = {
@@ -170,15 +170,28 @@ const AddType = () => {
                 </label>
                 <select
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  value={dateTimeRequired}
-                  onChange={(e) => setOutsideCity(e.target.value)}
+                  value={dateTimeRequired.toString()}
+                  onChange={(e) => setDateTimeRequired(e.target.value === "true")}
                 >
                   <option value="">Please select</option>
                   <option value="true">True</option>
                   <option value="false">False</option>
                 </select>
               </div>
-
+              <div>
+                <label className="mb-3 block text-black dark:text-white">
+                  Product Type Required
+                </label>
+                <select
+                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  value={productTypeRequired.toString()}
+                  onChange={(e) => setProductTypeRequired(e.target.value === "true")}
+                >
+                  <option value="">Please select</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>
               <div className="flex justify-center">
                 <button
                   type="submit"
