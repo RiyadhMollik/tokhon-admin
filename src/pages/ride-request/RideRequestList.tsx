@@ -13,7 +13,10 @@ const RideRequestList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10); // Number of items per page
   const [search, setSearch] = useState('');
-
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editedPickup_place, setEditedPickup_place] = useState('')
+  const [editedDrop_place, setEditedDrop_place] = useState('')
+  const [editedId, setEditedId] = useState('')
   const navigate = useNavigate();
   useEffect(() => {
     const savedStatus = localStorage.getItem("status");
@@ -41,7 +44,7 @@ const RideRequestList = () => {
     localStorage.setItem("statusTimestamp", new Date().getTime());
   };
   // Fetch data function with pagination
-  const fetchData = async (statusFilter = '', page = 1 , search='') => {
+  const fetchData = async (statusFilter = '', page = 1, search = '') => {
     setIsLoader(true);
     try {
       const response = await axios.get('api/ride-requests', {
@@ -66,8 +69,8 @@ const RideRequestList = () => {
 
   // Initial data fetch
   useEffect(() => {
-    fetchData(status, currentPage , search);
-  }, [status, currentPage ,search]);
+    fetchData(status, currentPage, search);
+  }, [status, currentPage, search]);
 
 
   const handleSubmit = (e) => {
@@ -129,6 +132,47 @@ const RideRequestList = () => {
     const date = new Date(dateTime);
     return date.toLocaleString('en-US', options);
   }
+  const handleEditButton = (rider) => {
+    setEditModalOpen(true)
+    setEditedPickup_place(rider.pickup_place)
+    setEditedDrop_place(rider.destination_place)
+    setEditedId(rider.id)
+  }
+
+  const handleEdit = async () => {
+    setIsLoader(true); // Show loader
+
+    try {
+      // Make the API call with request body instead of params
+      const response = await axios.put(`/api/ride-request/update-place/${editedId}`, {
+        pickup_place: editedPickup_place,
+        destination_place: editedDrop_place,
+      });
+
+      // Display success message
+      setAlertMessage(response.data.message || 'Updated successfully');
+      setEditModalOpen(false)
+      setAlertVisible(true);
+
+      // Hide alert after 2 seconds
+      setTimeout(() => setAlertVisible(false), 2000);
+
+      // Refetch the data (assuming status is defined elsewhere)
+      fetchData(status);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+
+      // Display error message
+      setAlertMessage('An error occurred while updating the ride request.');
+      setAlertVisible(true);
+
+      // Hide alert after 2 seconds
+      setTimeout(() => setAlertVisible(false), 2000);
+    } finally {
+      setIsLoader(false); // Hide loader
+    }
+  };
+
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -269,7 +313,25 @@ const RideRequestList = () => {
                         />
                       </svg>
                     </button>
-
+                    <button className='hover:text-primary' onClick={() => handleEditButton(item)}>
+                      <svg
+                        className="fill-current"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3 21h2.586L17.657 8.93a1 1 0 0 0 0-1.415l-2.172-2.172a1 1 0 0 0-1.415 0L3 16.586V21zm16.172-13.657l-2.172-2.172 1.415-1.415 2.172 2.172-1.415 1.415z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M2 21v-2.414L14.586 6l2.828 2.828L4.828 21H2z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -351,6 +413,56 @@ const RideRequestList = () => {
           </button>
         </div>
 
+        {
+          editModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                <div className='flex justify-between'>
+                  <h2 className="text-2xl font-semibold mb-4">Edit Ride Information</h2>
+                  <h2 className="text-2xl text-black font-semibold mb-4 cursor-pointer" onClick={() => setEditModalOpen(false)}>X</h2>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="pickup_place" className="block text-sm font-medium text-gray-700">
+                    Pickup Place:
+                  </label>
+                  <textarea
+                    value={editedPickup_place}
+                    onChange={(e) => setEditedPickup_place(e.target.value)}
+                    id="pickup_place"
+                    name="pickup_place"
+                    placeholder="Enter pickup place"
+                    rows="4"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label htmlFor="destination_place" className="block text-sm font-medium text-gray-700">
+                    Destination Place:
+                  </label>
+                  <textarea
+                    value={editedDrop_place}
+                    onChange={(e) => setEditedDrop_place(e.target.value)}
+                    id="destination_place"
+                    name="destination_place"
+                    placeholder="Enter destination place"
+                    rows="4"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+                    onClick={handleEdit}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        }
 
       </div>
     </div>

@@ -16,6 +16,7 @@ const AllDriverVehicle = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [search, setSearch] = useState('');
+  const [is_verified, setIsVerified] = useState(false);
 
   const openModal = (userId) => {
     setIsModalOpen(true);
@@ -27,7 +28,7 @@ const AllDriverVehicle = () => {
     const fetchData = async () => {
       setIsLoader(true);
       try {
-        const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}&search=${search}`);
+        const response = await axios.get(`api/user/all?page=${page}&user_type=${userType}&search=${search}&is_verified=${is_verified}`);
         setData(response.data.users); // Assuming `response.data` is an array of services
         setTotalPages(response.data.pagination.totalPages)
         setIsLoader(false);
@@ -38,7 +39,7 @@ const AllDriverVehicle = () => {
     };
 
     fetchData();
-  }, [userType, page, search]);
+  }, [userType, page, search, is_verified]);
 
   const viewUser = (id) => {
     navigate(`/user-details/${id}`);
@@ -64,6 +65,15 @@ const AllDriverVehicle = () => {
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full ">
         <div className="flex justify-between items-center mb-4">
+          <select
+            value={is_verified}
+            onChange={(e) => setIsVerified(e.target.value)}
+            className="border p-2 rounded"
+          >
+            <option value="">All</option>
+            <option value="true">Verified</option>
+            <option value="false">Not-Verified</option>
+          </select>
           <input
             type="text"
             placeholder="Search..."
