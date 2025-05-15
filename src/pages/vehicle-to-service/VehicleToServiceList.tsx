@@ -93,7 +93,7 @@ const VehicleToServiceList = () => {
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <div className="flex items-center space-x-3.5">
                                                 <button
-                                                    onClick={() => navigate(`/vts/${vehicle.id}`)}
+                                                    onClick={() => window.open(`/vts/${vehicle.id}`, '_blank')}
                                                     className="hover:text-primary"
                                                 >
                                                     <svg

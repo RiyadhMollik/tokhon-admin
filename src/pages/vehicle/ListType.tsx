@@ -112,7 +112,7 @@ const ListType = () => {
 
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
-                      <button className="hover:text-primary" onClick={() => navigate(`/vehicle-type/${item.id}`)}>
+                      <button className="hover:text-primary" onClick={() => window.open(`/vehicle-type/${item.id}`, '_blank')}>
                         <svg
                           className="fill-current"
                           width="18"

@@ -42,7 +42,7 @@ const AllDriverVehicle = () => {
   }, [userType, page, search, is_verified]);
 
   const viewUser = (id) => {
-    navigate(`/user-details/${id}`);
+    window.open(`/user-details/${id}` , '_blank');
   };
   const handlePageChange = (page) => {
     setPage(page);
@@ -187,7 +187,7 @@ const AllDriverVehicle = () => {
                     </button>
 
                     <button
-                      onClick={() => navigate(`/user-edit/${item.user_id}`)}
+                      onClick={() => window.open(`/user-edit/${item.user_id}` , '_blank')}
                       className="hover:text-primary"
                     >
                       <svg
@@ -362,7 +362,7 @@ const Modal = ({ isOpen, closeModal, selectedUserId }) => {
                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                     <div className="flex items-center space-x-3.5">
                       <button
-                        onClick={() => navigate(`/vehicle-details/${item.id}`)}
+                        onClick={() => window.open(`/vehicle-details/${item.id}`, '_blank')}
                         className="hover:text-primary"
                       >
                         <svg
@@ -385,7 +385,7 @@ const Modal = ({ isOpen, closeModal, selectedUserId }) => {
                       </button>
 
                       <button
-                        onClick={() => navigate(`/ride-edit/${item.id}`)}
+                        onClick={() => window.open(`/ride-edit/${item.id}`, '_blank')}
                         className="hover:text-primary"
                       >
                         <svg

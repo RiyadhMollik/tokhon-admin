@@ -112,7 +112,7 @@ const RideRequestList = () => {
   };
 
   const viewRide = (id) => {
-    navigate(`/ride-details/${id}`);
+    window.open(`/ride-details/${id}`, '_blank');
   };
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -173,7 +173,20 @@ const RideRequestList = () => {
     }
   };
 
-
+const handleDeleteButton = (id) => {
+  try {
+    const response = axios.delete(`/api/ride-request/${id}`);
+    console.log(response);
+    if (response) {
+      setAlertMessage('Deleted successfully');
+      setAlertVisible(true);
+      setTimeout(() => setAlertVisible(false), 2000);
+    }
+    fetchData(status);
+  } catch (error) {
+    console.error('Error deleting user:', error);
+  }
+}
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full overflow-x-auto">
@@ -337,6 +350,27 @@ const RideRequestList = () => {
                         />
                         <path
                           d="M2 21v-2.414L14.586 6l2.828 2.828L4.828 21H2z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                    <button className='hover:text-primary' onClick={() => handleDeleteButton(item.id)}>
+                      <svg
+                        className="fill-current"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                       <path
+                          d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M14 5a1 1 0 0 0-1 1H7a1 1 0 0 0 0 2h6a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1ZM9 8a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H9Z"
                           fill="currentColor"
                         />
                       </svg>

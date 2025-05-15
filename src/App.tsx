@@ -49,8 +49,8 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
   // axios.defaults.baseURL = 'https://localhost/ikbarvai/transport/'; // local
-  axios.defaults.baseURL = "https://hoishailhadaapi.tokhon.com/";
-  // axios.defaults.baseURL = "http://localhost:3000/";
+  // axios.defaults.baseURL = "https://hoishailhadaapi.tokhon.com/";
+  axios.defaults.baseURL = "http://localhost:3000/";
   const token = localStorage.getItem('token');
   axios.defaults.headers.common['Authorization'] = token
     ? `Bearer ${token}`

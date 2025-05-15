@@ -104,7 +104,7 @@ const ServiceCreate: React.FC = () => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
-                    <button className="hover:text-primary" onClick={() => { navigate(`/service/${item.id}`)}}>
+                    <button className="hover:text-primary" onClick={() => { window.open(`/service/${item.id}`, '_blank')}}>
                       <svg
                         className="fill-current"
                         width="18"

@@ -9,7 +9,7 @@ const RideDetails = () => {
   const [data, setData] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const [typedata , setTypedata] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
 
@@ -19,8 +19,9 @@ const RideDetails = () => {
       setIsLoader(true);
       try {
         const response = await axios.get(`api/ride-request/${id}`);
-        console.log(response.data.bids);
-        setData(response.data);
+        console.log(response.data);
+        setData(response.data.rideRequest);
+        setTypedata(response.data.vehicle_type);
         setIsLoader(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -143,6 +144,21 @@ const RideDetails = () => {
               </p>
               <p className="card-text">
                 <strong>Status:</strong> {data.status}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row mb-4">
+        <div className="col">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Vehicle Details</h5>
+              <p className="card-text">
+                <strong>Vehicle Type:</strong> {typedata.name}
+              </p>
+              <p className="card-text">
+                <strong>Description:</strong> {typedata.description}
               </p>
             </div>
           </div>

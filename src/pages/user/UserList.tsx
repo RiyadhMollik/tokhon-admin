@@ -32,7 +32,7 @@ const UserList = () => {
   }, [userType, page,search]);
 
   const viewUser = (id) => {
-    navigate(`/user-details/${id}`);
+    window.open(`/user-details/${id}`, '_blank');
   };
   const handlePageChange = (page) => {
     setPage(page);
@@ -166,7 +166,7 @@ const UserList = () => {
                     </button>
 
                     <button
-                      onClick={() => navigate(`/user-edit/${item.user_id}`)}
+                      onClick={() => window.open(`/user-edit/${item.user_id}`, '_blank')}
                       className="hover:text-primary"
                     >
                       <svg
