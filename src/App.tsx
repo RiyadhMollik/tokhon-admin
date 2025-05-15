@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
@@ -17,7 +16,6 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AuthRoute from './pages/Authentication/AuthRoute';
 import PrivateRoute from './pages/Authentication/PrivateRoute';
-
 import ServiceCreate from './pages/service/ServiceCreate';
 import ServiceList from './pages/service/ServiceList';
 import ListType from './pages/vehicle/ListType';
@@ -32,7 +30,6 @@ import UserDetails from './pages/user/UserDetails';
 import UserEdit from './pages/user/UserEdit';
 import TopupList from './pages/topup/TopupList';
 import RideEdit from './pages/vehicle/RideEdit';
-
 import axios from 'axios';
 import ServiceEdit from './pages/service/ServiceEdit';
 import TypeDetails from "./pages/vehicle/TypeDetails";
@@ -40,7 +37,6 @@ import VehicleToServiceList from './pages/vehicle-to-service/VehicleToServiceLis
 import EditVehicleToService from './pages/vehicle-to-service/EditVehicleToService';
 import NotificationResult from './pages/NotificationResult/NotificationResult';
 import GlobalSetting from './pages/GlobalSetting/GlobalSetting';
-
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();

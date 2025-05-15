@@ -55,8 +55,8 @@ const SignIn: React.FC = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
-                <img className="hidden dark:block" src='https://i.ibb.co.com/KxJD53tp/app-logo-truck-lagbe-truck-lagbe-dark-svg.png' alt="Logo" />
-                <img className="dark:hidden" src='https://i.ibb.co.com/SGGmysh/truck-lagbe-dark-svg.png' alt="Logo" />
+                <img className="hidden dark:block" src='https://i.ibb.co.com/JWtTr7F2/Group-2.png' alt="Logo" />
+                <img className="dark:hidden" src='https://i.ibb.co.com/wZ2hvBVs/Group-3-1.png' alt="Logo" />
               </Link>
 
               {alertVisible && (

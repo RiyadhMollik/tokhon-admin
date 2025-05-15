@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../extra/loader';
@@ -19,8 +19,7 @@ const RideDetails = () => {
       setIsLoader(true);
       try {
         const response = await axios.get(`api/ride-request/${id}`);
-        console.log(response);
-
+        console.log(response.data.bids);
         setData(response.data);
         setIsLoader(false);
       } catch (error) {
@@ -28,7 +27,6 @@ const RideDetails = () => {
         setIsLoader(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -138,7 +136,7 @@ const RideDetails = () => {
                 <strong>Destination:</strong> {data.destination_place}
               </p>
               <p className="card-text">
-                <strong>Fare:</strong> ${data.fare}
+                <strong>Fare:</strong> {data.fare} tk
               </p>
               <p className="card-text">
                 <strong>Time:</strong> {new Date(data.time).toLocaleString()}
@@ -167,7 +165,7 @@ const RideDetails = () => {
                 <strong>{bid.name}</strong>
                 <p>Phone: {bid.number}</p>
                 <p>Vehicle: {bid.vehicle}</p>
-                <p>Bid Amount: ${bid.bidAmount}</p>
+                <p>Bid Amount: {bid.bidAmount} tk</p>
                 <p>Status: {bid.status}</p>
               </div>
             </div>

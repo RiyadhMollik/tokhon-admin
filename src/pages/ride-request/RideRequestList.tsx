@@ -203,7 +203,8 @@ const RideRequestList = () => {
           >
             <option value="">All</option>
             <option value="pending">Pending</option>
-            <option value="ride_completed">Verified</option>
+            <option value="ride_active">Ride Active</option>
+            <option value="ride_completed">Ride Completed</option>
             <option value="bidding">Bidding</option>
           </select>
           <input
@@ -222,8 +223,11 @@ const RideRequestList = () => {
               <th className=" py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                 #
               </th>
-              <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
+              <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                 Name
+              </th>
+              <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
+                Phone
               </th>
               <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                 Pickup Place
@@ -253,6 +257,11 @@ const RideRequestList = () => {
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
                     {item.user_name}
+                  </h5>
+                </td>
+                <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                  <h5 className="font-medium text-black dark:text-white">
+                    {item.user_number}
                   </h5>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
@@ -289,7 +298,7 @@ const RideRequestList = () => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <p className="text-black dark:text-white">
-                    {formatDateTime(item.created_at)}
+                    {formatDateTime(item.time)}
                   </p>
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
