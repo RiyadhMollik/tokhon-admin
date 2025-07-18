@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
-import Logo from '../../images/logo/logo.svg';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from "../context/AuthProvider";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -13,7 +13,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
   const navigate = useNavigate();
-
+  const { rolePermission, loadingUser } = useContext(AuthContext);
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -22,7 +22,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
   );
 
-  // close on click outside
+  // Close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
@@ -36,9 +36,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     };
     document.addEventListener('click', clickHandler);
     return () => document.removeEventListener('click', clickHandler);
-  });
+  }, [sidebarOpen, setSidebarOpen]);
 
-  // close if the esc key is pressed
+  // Close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
@@ -46,7 +46,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     };
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
-  });
+  }, [sidebarOpen, setSidebarOpen]);
 
   useEffect(() => {
     localStorage.setItem('sidebar-expanded', sidebarExpanded.toString());
@@ -62,18 +62,60 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     navigate('/');
   };
 
+  // If loading, show a loading state
+  if (loadingUser) {
+    return (
+      <aside
+        className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+          <NavLink to="/">
+            <img src="https://i.ibb.co/JWtTr7F2/Group-2.png" alt="Logo" />
+          </NavLink>
+          <button
+            ref={trigger}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-controls="sidebar"
+            aria-expanded={sidebarOpen}
+            className="block lg:hidden"
+          >
+            <svg
+              className="fill-current"
+              width="20"
+              height="18"
+              viewBox="0 0 20 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z"
+                fill=""
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+          <p className="mt-4 text-white">Loading...</p>
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/">
-          <img src='https://i.ibb.co.com/JWtTr7F2/Group-2.png' alt="Logo" />
+          <img src="https://i.ibb.co/JWtTr7F2/Group-2.png" alt="Logo" />
         </NavLink>
-
         <button
           ref={trigger}
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -111,9 +153,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               <li>
                 <NavLink
                   to="/dashboard"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('dashboard') &&
-                    'bg-graydark dark:bg-meta-4'
-                    }`}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('dashboard') && 'bg-graydark dark:bg-meta-4'
+                  }`}
                 >
                   <svg
                     className="fill-current"
@@ -144,25 +186,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
 
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/service' || pathname.includes('service')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
+              {rolePermission['Service List'] || rolePermission['Add Service'] ? (
+                <SidebarLinkGroup
+                  activeCondition={pathname === '/service' || pathname.includes('service')}
+                >
+                  {(handleClick, open) => (
                     <React.Fragment>
                       <NavLink
                         to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/service' ||
-                          pathname.includes('service')) &&
+                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          (pathname === '/service' || pathname.includes('service')) &&
                           'bg-graydark dark:bg-meta-4'
-                          }`}
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
+                          sidebarExpanded ? handleClick() : setSidebarExpanded(true);
                         }}
                       >
                         <svg
@@ -200,8 +238,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         </svg>
                         Services
                         <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
-                            }`}
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
+                            open && 'rotate-180'
+                          }`}
                           width="20"
                           height="20"
                           viewBox="0 0 20 20"
@@ -216,61 +255,179 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           />
                         </svg>
                       </NavLink>
-                      {/* <!-- Dropdown Menu Start --> */}
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${!open && 'hidden'}`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            <NavLink
-                              to="/service/create"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Add Service
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/service/list"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Service List
-                            </NavLink>
-                          </li>
+                          {rolePermission['Add Service'] && (
+                            <li>
+                              <NavLink
+                                to="/service/create"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Add Service
+                              </NavLink>
+                            </li>
+                          )}
+                          {rolePermission['Service List'] && (
+                            <li>
+                              <NavLink
+                                to="/service/list"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Service List
+                              </NavLink>
+                            </li>
+                          )}
                         </ul>
                       </div>
-                      {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+                  )}
+                </SidebarLinkGroup>
+              ) : null}
 
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/vehicle' || pathname.includes('vehicle')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
+              {rolePermission['Create Admin User'] ||
+              rolePermission['Roles'] ||
+              rolePermission['Permissions'] ? (
+                <SidebarLinkGroup
+                  activeCondition={pathname === '/role' || pathname.includes('role')}
+                >
+                  {(handleClick, open) => (
                     <React.Fragment>
                       <NavLink
                         to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/vehicle' ||
-                          pathname.includes('vehicle')) &&
+                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          (pathname === '/role' || pathname.includes('role')) &&
                           'bg-graydark dark:bg-meta-4'
-                          }`}
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
+                          sidebarExpanded ? handleClick() : setSidebarExpanded(true);
+                        }}
+                      >
+                        <svg
+                          className="fill-current"
+                          width="18"
+                          height="19"
+                          viewBox="0 0 18 19"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clipPath="url(#clip0_130_9807)">
+                            <path
+                              d="M15.7501 0.55835H2.2501C1.29385 0.55835 0.506348 1.34585 0.506348 2.3021V7.53335C0.506348 8.4896 1.29385 9.2771 2.2501 9.2771H15.7501C16.7063 9.2771 17.4938 8.4896 17.4938 7.53335V2.3021C17.4938 1.34585 16.7063 0.55835 15.7501 0.55835ZM16.2563 7.53335C16.2563 7.8146 16.0313 8.0396 15.7501 8.0396H2.2501C1.96885 8.0396 1.74385 7.8146 1.74385 7.53335V2.3021C1.74385 2.02085 1.96885 1.79585 2.2501 1.79585H15.7501C16.0313 1.79585 16.2563 2.02085 16.2563 2.3021V7.53335Z"
+                              fill=""
+                            />
+                            <path
+                              d="M6.13135 10.9646H2.2501C1.29385 10.9646 0.506348 11.7521 0.506348 12.7083V15.8021C0.506348 16.7583 1.29385 17.5458 2.2501 17.5458H6.13135C7.0876 17.5458 7.8751 16.7583 7.8751 15.8021V12.7083C7.90322 11.7521 7.11572 10.9646 6.13135 10.9646ZM6.6376 15.8021C6.6376 16.0833 6.4126 16.3083 6.13135 16.3083H2.2501C1.96885 16.3083 1.74385 16.0833 1.74385 15.8021V12.7083C1.74385 12.4271 1.96885 12.2021 2.2501 12.2021H6.13135C6.4126 12.2021 6.6376 12.4271 6.6376 12.7083V15.8021Z"
+                              fill=""
+                            />
+                            <path
+                              d="M15.75 10.9646H11.8688C10.9125 10.9646 10.125 11.7521 10.125 12.7083V15.8021C10.125 16.7583 10.9125 17.5458 11.8688 17.5458H15.75C16.7063 17.5458 17.4938 16.7583 17.4938 15.8021V12.7083C17.4938 11.7521 16.7063 10.9646 15.75 10.9646ZM16.2562 15.8021C16.2562 16.0833 16.0312 16.3083 15.75 16.3083H11.8688C11.5875 16.3083 11.3625 16.0833 11.3625 15.8021V12.7083C11.3625 12.4271 11.5875 12.2021 11.8688 12.2021H15.75C16.0312 12.2021 16.2562 12.4271 16.2562 12.7083V15.8021Z"
+                              fill=""
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_130_9807">
+                              <rect
+                                width="18"
+                                height="18"
+                                fill="white"
+                                transform="translate(0 0.052124)"
+                              />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        Role
+                        <svg
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
+                            open && 'rotate-180'
+                          }`}
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M4.41107 6.9107C4.73651 6.58527 5.26414 6.58527 5.58958 6.9107L10.0003 11.3214L14.4111 6.91071C14.7365 6.58527 15.2641 6.58527 15.5896 6.91071C15.915 7.23614 15.915 7.76378 15.5896 8.08922L10.5896 13.0892C10.2641 13.4147 9.73651 13.4147 9.41107 13.0892L4.41107 8.08922C4.08563 7.76378 4.08563 7.23614 4.41107 6.9107Z"
+                            fill=""
+                          />
+                        </svg>
+                      </NavLink>
+                      <div
+                        className={`translate transform overflow-hidden ${!open && 'hidden'}`}
+                      >
+                        <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
+                          {rolePermission['Create Admin User'] && (
+                            <li>
+                              <NavLink
+                                to="/create-admin-user"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Create Admin User
+                              </NavLink>
+                            </li>
+                          )}
+                          {rolePermission['Roles'] && (
+                            <li>
+                              <NavLink
+                                to="/roles"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Role
+                              </NavLink>
+                            </li>
+                          )}
+                          {rolePermission['Permissions'] && (
+                            <li>
+                              <NavLink
+                                to="/role-permission"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Role Permission
+                              </NavLink>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </React.Fragment>
+                  )}
+                </SidebarLinkGroup>
+              ) : null}
+
+              {rolePermission['Add Vehicle Type'] || rolePermission['Vehicle Type List'] ? (
+                <SidebarLinkGroup
+                  activeCondition={pathname === '/vehicle' || pathname.includes('vehicle')}
+                >
+                  {(handleClick, open) => (
+                    <React.Fragment>
+                      <NavLink
+                        to="#"
+                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          (pathname === '/vehicle' || pathname.includes('vehicle')) &&
+                          'bg-graydark dark:bg-meta-4'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          sidebarExpanded ? handleClick() : setSidebarExpanded(true);
                         }}
                       >
                         <svg
@@ -284,32 +441,33 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           <path
                             d="M13.2875 0.506226H2.7125C1.75625 0.506226 0.96875 1.29373 0.96875 2.24998V15.75C0.96875 16.7062 1.75625 17.5219 2.74063 17.5219H13.3156C14.2719 17.5219 15.0875 16.7344 15.0875 15.75V2.24998C15.0313 1.29373 14.2438 0.506226 13.2875 0.506226ZM13.7656 15.75C13.7656 16.0312 13.5406 16.2562 13.2594 16.2562H2.7125C2.43125 16.2562 2.20625 16.0312 2.20625 15.75V2.24998C2.20625 1.96873 2.43125 1.74373 2.7125 1.74373H13.2875C13.5688 1.74373 13.7938 1.96873 13.7938 2.24998V15.75H13.7656Z"
                             fill=""
-                          ></path>
+                          />
                           <path
                             d="M11.7965 2.6156H8.73086C8.22461 2.6156 7.80273 3.03748 7.80273 3.54373V7.25623C7.80273 7.76248 8.22461 8.18435 8.73086 8.18435H11.7965C12.3027 8.18435 12.7246 7.76248 12.7246 7.25623V3.5156C12.6965 3.03748 12.3027 2.6156 11.7965 2.6156ZM11.4309 6.8906H9.06836V3.88123H11.4309V6.8906Z"
                             fill=""
-                          ></path>
+                          />
                           <path
                             d="M3.97773 4.35938H6.03086C6.36836 4.35938 6.67773 4.07812 6.67773 3.7125C6.67773 3.34687 6.39648 3.09375 6.03086 3.09375H3.94961C3.61211 3.09375 3.30273 3.375 3.30273 3.74063C3.30273 4.10625 3.61211 4.35938 3.97773 4.35938Z"
                             fill=""
-                          ></path>
+                          />
                           <path
                             d="M3.97773 7.9312H6.03086C6.36836 7.9312 6.67773 7.64995 6.67773 7.28433C6.67773 6.9187 6.39648 6.63745 6.03086 6.63745H3.94961C3.61211 6.63745 3.30273 6.9187 3.30273 7.28433C3.30273 7.64995 3.61211 7.9312 3.97773 7.9312Z"
                             fill=""
-                          ></path>
+                          />
                           <path
                             d="M12.0789 10.2374H3.97891C3.64141 10.2374 3.33203 10.5187 3.33203 10.8843C3.33203 11.2499 3.61328 11.5312 3.97891 11.5312H12.0789C12.4164 11.5312 12.7258 11.2499 12.7258 10.8843C12.7258 10.5187 12.4164 10.2374 12.0789 10.2374Z"
                             fill=""
-                          ></path>
+                          />
                           <path
                             d="M12.0789 13.8093H3.97891C3.64141 13.8093 3.33203 14.0906 3.33203 14.4562C3.33203 14.8218 3.61328 15.1031 3.97891 15.1031H12.0789C12.4164 15.1031 12.7258 14.8218 12.7258 14.4562C12.7258 14.0906 12.4164 13.8093 12.0789 13.8093Z"
                             fill=""
-                          ></path>
+                          />
                         </svg>
                         Vehicle Type
                         <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
-                            }`}
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
+                            open && 'rotate-180'
+                          }`}
                           width="20"
                           height="20"
                           viewBox="0 0 20 20"
@@ -324,60 +482,59 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           />
                         </svg>
                       </NavLink>
-                      {/* <!-- Dropdown Menu Start --> */}
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${!open && 'hidden'}`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            <NavLink
-                              to="/vehicle-type/create"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Add Vehicle Type
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/vehicle-type/list"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Vehicle Type List
-                            </NavLink>
-                          </li>
+                          {rolePermission['Add Vehicle Type'] && (
+                            <li>
+                              <NavLink
+                                to="/vehicle-type/create"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Add Vehicle Type
+                              </NavLink>
+                            </li>
+                          )}
+                          {rolePermission['Vehicle Type List'] && (
+                            <li>
+                              <NavLink
+                                to="/vehicle-type/list"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Vehicle Type List
+                              </NavLink>
+                            </li>
+                          )}
                         </ul>
                       </div>
-                      {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/vts' || pathname.includes('vts')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
+                  )}
+                </SidebarLinkGroup>
+              ) : null}
+
+              {rolePermission['Add Vehicle To Service'] ||
+              rolePermission['Vehicle To Service List'] ? (
+                <SidebarLinkGroup
+                  activeCondition={pathname === '/vts' || pathname.includes('vts')}
+                >
+                  {(handleClick, open) => (
                     <React.Fragment>
                       <NavLink
                         to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${(pathname === '/vts' ||
-                          pathname.includes('vts')) &&
+                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                          (pathname === '/vts' || pathname.includes('vts')) &&
                           'bg-graydark dark:bg-meta-4'
-                          }`}
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
+                          sidebarExpanded ? handleClick() : setSidebarExpanded(true);
                         }}
                       >
                         <svg
@@ -387,12 +544,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
                         >
-                          <path d="M18.92 6.01C18.72 5.42 18.15 5 17.5 5H6.5C5.85 5 5.28 5.42 5.08 6.01L3 12v7c0 1.1.9 2 2 2h1c1.1 0 2-.9 2-2v-1h8v1c0 1.1.9 2 2 2h1c1.1 0 2-.9 2-2v-7l-2.08-5.99zM6.85 6.5h10.29l1.34 4H5.51l1.34-4zM19 17c-.83 0-1.5-.67-1.5-1.5S18.17 14 19 14s1.5.67 1.5 1.5S19.83 17 19 17zm-14 0c-.83 0-1.5-.67-1.5-1.5S4.17 14 5 14s1.5.67 1.5 1.5S5.83 17 5 17zm2-5h10v2H7v-2z" />
+                          <path
+                            d="M18.92 6.01C18.72 5.42 18.15 5 17.5 5H6.5C5.85 5 5.28 5.42 5.08 6.01L3 12v7c0 1.1.9 2 2 2h1c1.1 0 2-.9 2-2v-1h8v1c0 1.1.9 2 2 2h1c1.1 0 2-.9 2-2v-7l-2.08-5.99zM6.85 6.5h10.29l1.34 4H5.51l1.34-4zM19 17c-.83 0-1.5-.67-1.5-1.5S18.17 14 19 14s1.5.67 1.5 1.5S19.83 17 19 17zm-14 0c-.83 0-1.5-.67-1.5-1.5S4.17 14 5 14s1.5.67 1.5 1.5S5.83 17 5 17zm2-5h10v2H7v-2z"
+                          />
                         </svg>
                         Vehicle To Service
                         <svg
-                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'
-                            }`}
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
+                            open && 'rotate-180'
+                          }`}
                           width="20"
                           height="20"
                           viewBox="0 0 20 20"
@@ -406,177 +566,211 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             fill=""
                           />
                         </svg>
-
                       </NavLink>
-                      {/* <!-- Dropdown Menu Start --> */}
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${!open && 'hidden'}`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            <NavLink
-                              to="/vts"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Add Vehicle To Service
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/vts/list"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Vehicle To Service List
-                            </NavLink>
-                          </li>
+                          {rolePermission['Add Vehicle To Service'] && (
+                            <li>
+                              <NavLink
+                                to="/vts"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Add Vehicle To Service
+                              </NavLink>
+                            </li>
+                          )}
+                          {rolePermission['Vehicle To Service List'] && (
+                            <li>
+                              <NavLink
+                                to="/vts/list"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Vehicle To Service List
+                              </NavLink>
+                            </li>
+                          )}
                         </ul>
                       </div>
-                      {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <li>
-                <NavLink
-                  to="/users"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('users') && 'bg-graydark dark:bg-meta-4'
-                    }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M16 14c2.67 0 8 1.34 8 4v2H8v-2c0-2.66 5.33-4 8-4zm-4-2c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm10 1c-.29 0-.59-.02-.88-.07.61-.87.88-1.92.88-2.93 0-3.31-2.69-6-6-6-3.31 0-6 2.69-6 6 0 1.01.27 2.06.88 2.93-.29.05-.59.07-.88.07-2.67 0-8 1.34-8 4v2h24v-2c0-2.66-5.33-4-8-4z" />
-                  </svg>
-                  Users
-                </NavLink>
-              </li>
+                  )}
+                </SidebarLinkGroup>
+              ) : null}
 
-              <li>
-                <NavLink
-                  to="/adv"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('adv') && 'bg-graydark dark:bg-meta-4'
+              {rolePermission['Users'] && (
+                <li>
+                  <NavLink
+                    to="/users"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('users') && 'bg-graydark dark:bg-meta-4'
                     }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M9 16c-1.1 0-2-.9-2-2h10c0 1.1-.9 2-2 2H9zm11-3H4c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h16c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1zM9.12 3h5.76c.48 0 .9.34.98.81l.72 4.26c.09.57-.37 1.07-.98 1.07H9.38c-.6 0-1.07-.5-.98-1.07l.72-4.26C8.22 3.34 8.64 3 9.12 3zM12 0C10.67 0 9.6 1.07 9.6 2.4S10.67 4.8 12 4.8s2.4-1.07 2.4-2.4S13.33 0 12 0z" />
-                  </svg>
-                  All Driver Vehicle
-                </NavLink>
-              </li>
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16 14c2.67 0 8 1.34 8 4v2H8v-2c0-2.66 5.33-4 8-4zm-4-2c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm10 1c-.29 0-.59-.02-.88-.07.61-.87.88-1.92.88-2.93 0-3.31-2.69-6-6-6-3.31 0-6 2.69-6 6 0 1.01.27 2.06.88 2.93-.29.05-.59.07-.88.07-2.67 0-8 1.34-8 4v2h24v-2c0-2.66-5.33-4-8-4z"
+                      />
+                    </svg>
+                    Users
+                  </NavLink>
+                </li>
+              )}
 
-              <li>
-                <NavLink
-                  to="/rrl"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('rrl') && 'bg-graydark dark:bg-meta-4'
+              {rolePermission['All Driver Vehicle'] && (
+                <li>
+                  <NavLink
+                    to="/adv"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('adv') && 'bg-graydark dark:bg-meta-4'
                     }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M18.92 6.01C18.72 5.42 18.15 5 17.5 5H6.5C5.85 5 5.28 5.42 5.08 6.01L3 12v7c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-7l-2.08-5.99zM6.5 7h11l1.2 3H5.3L6.5 7zM19 16H5v-2h14v2zm-9 3c-1.1 0-2-.9-2-2h2v2zm6 0h-2v-2h2c0 1.1-.9 2-2 2z" />
-                  </svg>
-                  Ride Request
-                </NavLink>
-              </li>
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M9 16c-1.1 0-2-.9-2-2h10c0 1.1-.9 2-2 2H9zm11-3H4c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1h16c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1zM9.12 3h5.76c.48 0 .9.34.98.81l.72 4.26c.09.57-.37 1.07-.98 1.07H9.38c-.6 0-1.07-.5-.98-1.07l.72-4.26C8.22 3.34 8.64 3 9.12 3zM12 0C10.67 0 9.6 1.07 9.6 2.4S10.67 4.8 12 4.8s2.4-1.07 2.4-2.4S13.33 0 12 0z"
+                      />
+                    </svg>
+                    All Driver Vehicle
+                  </NavLink>
+                </li>
+              )}
 
-              <li>
-                <NavLink
-                  to="/topup/list"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('topup/list') &&
-                    'bg-graydark dark:bg-meta-4'
+              {rolePermission['Ride Request'] && (
+                <li>
+                  <NavLink
+                    to="/rrl"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('rrl') && 'bg-graydark dark:bg-meta-4'
                     }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.5-13h1v6H17v1h-5.5V19h-1v-6H7v-1h5.5V7z" />
-                  </svg>
-                  Topup Request
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/messege"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('/messege') &&
-                    'bg-graydark dark:bg-meta-4'
-                    }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M20 2H4C2.9 2 2 2.9 2 4v14l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM4 18V4h16v8H6l-2 2z" />
-                  </svg>
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M18.92 6.01C18.72 5.42 18.15 5 17.5 5H6.5C5.85 5 5.28 5.42 5.08 6.01L3 12v7c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-7l-2.08-5.99zM6.5 7h11l1.2 3H5.3L6.5 7zM19 16H5v-2h14v2zm-9 3c-1.1 0-2-.9-2-2h2v2zm6 0h-2v-2h2c0 1.1-.9 2-2 2z"
+                      />
+                    </svg>
+                    Ride Request
+                  </NavLink>
+                </li>
+              )}
 
-                  Messege
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/global-setting"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('/global-setting') &&
-                    'bg-graydark dark:bg-meta-4'
+              {rolePermission['Topup Request'] && (
+                <li>
+                  <NavLink
+                    to="/topup/list"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('topup/list') && 'bg-graydark dark:bg-meta-4'
                     }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M19.14 12.936c.036-.3.06-.604.06-.936s-.024-.636-.07-.936l2.03-1.578a.5.5 0 00.12-.636l-1.922-3.32a.5.5 0 00-.6-.22l-2.39.96a7.025 7.025 0 00-1.62-.936l-.36-2.52A.5.5 0 0014 2h-4a.5.5 0 00-.5.426l-.36 2.52a7.025 7.025 0 00-1.62.936l-2.39-.96a.5.5 0 00-.6.22l-1.922 3.32a.5.5 0 00.12.636l2.03 1.578c-.045.3-.07.618-.07.936s.024.636.07.936l-2.03 1.578a.5.5 0 00-.12.636l1.922 3.32a.5.5 0 00.6.22l2.39-.96c.495.39 1.032.708 1.62.936l.36 2.52A.5.5 0 0010 22h4a.5.5 0 00.5-.426l.36-2.52c.588-.228 1.125-.546 1.62-.936l2.39.96a.5.5 0 00.6-.22l1.922-3.32a.5.5 0 00-.12-.636l-2.03-1.578zM12 15a3 3 0 110-6 3 3 0 010 6z" />
-                  </svg>
-                  Global Setting
-                </NavLink>
-              </li>
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.5-13h1v6H17v1h-5.5V19h-1v-6H7v-1h5.5V7z"
+                      />
+                    </svg>
+                    Topup Request
+                  </NavLink>
+                </li>
+              )}
 
-              <li>
-                <NavLink
-                  to="/profile"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
+              {rolePermission['Messege'] && (
+                <li>
+                  <NavLink
+                    to="/messege"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('/messege') && 'bg-graydark dark:bg-meta-4'
                     }`}
-                >
-                  <svg
-                    className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M12 12c2.67 0 8 1.34 8 4v2H4v-2c0-2.66 5.33-4 8-4zm0-2c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm0 4c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5zm0-6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2z" />
-                  </svg>
-                  Profile
-                </NavLink>
-              </li>
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M20 2H4C2.9 2 2 2.9 2 4v14l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM4 18V4h16v8H6l-2 2z"
+                      />
+                    </svg>
+                    Messege
+                  </NavLink>
+                </li>
+              )}
+
+              {rolePermission['Global Setting'] && (
+                <li>
+                  <NavLink
+                    to="/global-setting"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('/global-setting') && 'bg-graydark dark:bg-meta-4'
+                    }`}
+                  >
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M19.14 12.936c.036-.3.06-.604.06-.936s-.024-.636-.07-.936l2.03-1.578a.5.5 0 00.12-.636l-1.922-3.32a.5.5 0 00-.6-.22l-2.39.96a7.025 7.025 0 00-1.62-.936l-.36-2.52A.5.5 0 0014 2h-4a.5.5 0 00-.5.426l-.36 2.52a7.025 7.025 0 00-1.62.936l-2.39-.96a.5.5 0 00-.6.22l-1.922 3.32a.5.5 0 00.12.636l2.03 1.578c-.045.3-.07.618-.07.936s.024.636.07.936l-2.03 1.578a.5.5 0 00-.12.636l1.922 3.32a.5.5 0 00.6.22l2.39-.96c.495.39 1.032.708 1.62.936l.36 2.52A.5.5 0 0010 22h4a.5.5 0 00.5-.426l.36-2.52c.588-.228 1.125-.546 1.62-.936l2.39.96a.5.5 0 00.6-.22l1.922-3.32a.5.5 0 00-.12-.636l-2.03-1.578zM12 15a3 3 0 110-6 3 3 0 010 6z"
+                      />
+                    </svg>
+                    Global Setting
+                  </NavLink>
+                </li>
+              )}
+
+              {rolePermission['Profile'] && (
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                      pathname.includes('profile') && 'bg-graydark dark:bg-meta-4'
+                    }`}
+                  >
+                    <svg
+                      className="fill-current"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 12c2.67 0 8 1.34 8 4v2H4v-2c0-2.66 5.33-4 8-4zm0-2c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm0 4c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5zm0-6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2z"
+                      />
+                    </svg>
+                    Profile
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -585,14 +779,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
               ACTIONS
             </h3>
-
             <ul className="mb-6 flex flex-col gap-1.5">
               <li>
                 <NavLink
                   to="#"
                   onClick={handleConfirmLogout}
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('logout') && 'bg-graydark dark:bg-meta-4'
-                    }`}
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('logout') && 'bg-graydark dark:bg-meta-4'
+                  }`}
                 >
                   <svg
                     className="fill-current"
@@ -601,7 +795,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M16 13v-2H8V8l-5 4 5 4v-3h8zm4 7H4V4h7V2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7z" />
+                    <path
+                      d="M16 13v-2H8V8l-5 4 5 4v-3h8zm4 7H4V4h7V2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h-2v7z"
+                    />
                   </svg>
                   Logout
                 </NavLink>

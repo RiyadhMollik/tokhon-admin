@@ -29,7 +29,7 @@ const UserList = () => {
     };
 
     fetchData();
-  }, [userType, page,search]);
+  }, [userType, page, search]);
 
   const viewUser = (id) => {
     window.open(`/user-details/${id}`, '_blank');
@@ -193,74 +193,67 @@ const UserList = () => {
             ))}
           </tbody>
         </table>
+        {/* Dynamic Pagination Buttons */}
         <div className="flex justify-center mt-4 gap-4">
+          {/* Previous Button */}
           <button
-            className={`px-4 py-2 ${page === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-l`}
+            className={`px-4 py-2 rounded-l ${page === 1 ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'}`}
             onClick={() => handlePageChange(page - 1)}
             disabled={page === 1}
           >
             Previous
           </button>
 
-          {/* Page numbers */}
+          {/* Page Numbers */}
           <div className="flex items-center space-x-2">
-            {/* Show the first page */}
-            {page > 3 && (
-              <button
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => handlePageChange(1)}
-              >
-                1
-              </button>
-            )}
+            {(() => {
+              const pages = [];
+              const maxButtons = 10;
+              let start = Math.max(1, page - Math.floor(maxButtons / 2));
+              let end = start + maxButtons - 1;
 
-            {/* Show "..." if there are hidden pages between first and current */}
-            {page > 3 && (
-              <span className="px-4 py-2 text-gray-500">...</span>
-            )}
+              if (end > totalPages) {
+                end = totalPages;
+                start = Math.max(1, end - maxButtons + 1);
+              }
 
-            {/* Show current page - 1, current page, and current page + 1 */}
-            {page > 1 && (
-              <button
-                className={`px-4 py-2 ${page === page - 1 ? 'bg-blue-500 text-white' : 'bg-gray-300 '} rounded`}
-                onClick={() => handlePageChange(page - 1)}
-              >
-                {page - 1}
-              </button>
-            )}
-            <button
-              className={`px-4 py-2 ${page === page ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
-              onClick={() => handlePageChange(page)}
-            >
-              {page}
-            </button>
-            {page < totalPages && (
-              <button
-                className={`px-4 py-2 ${page === page + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
-                onClick={() => handlePageChange(page + 1)}
-              >
-                {page + 1}
-              </button>
-            )}
+              for (let i = start; i <= end; i++) {
+                pages.push(
+                  <button
+                    key={i}
+                    className={`px-4 py-2 rounded ${page === i ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+                    onClick={() => handlePageChange(i)}
+                  >
+                    {i}
+                  </button>
+                );
+              }
 
-            {/* Show "..." if there are hidden pages between last and current */}
-            {page < totalPages - 2 && (
-              <span className="px-4 py-2 text-gray-500">...</span>
-            )}
+              // Add last page button if it's not already included
+              if (end < totalPages) {
+                if (end < totalPages - 1) {
+                  pages.push(
+                    <span key="ellipsis" className="px-2 text-gray-500">...</span>
+                  );
+                }
+                pages.push(
+                  <button
+                    key={totalPages}
+                    className={`px-4 py-2 rounded ${page === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+                    onClick={() => handlePageChange(totalPages)}
+                  >
+                    {totalPages}
+                  </button>
+                );
+              }
 
-            {/* Show the last page */}
-            {page < totalPages - 2 && (
-              <button
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => handlePageChange(totalPages)}
-              >
-                {totalPages}
-              </button>
-            )}
+              return pages;
+            })()}
           </div>
 
+          {/* Next Button */}
           <button
-            className={`px-4 py-2 ${page === totalPages ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-r`}
+            className={`px-4 py-2 rounded-r ${page === totalPages ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'}`}
             onClick={() => handlePageChange(page + 1)}
             disabled={page === totalPages}
           >

@@ -173,20 +173,20 @@ const RideRequestList = () => {
     }
   };
 
-const handleDeleteButton = (id) => {
-  try {
-    const response = axios.delete(`/api/ride-request/${id}`);
-    console.log(response);
-    if (response) {
-      setAlertMessage('Deleted successfully');
-      setAlertVisible(true);
-      setTimeout(() => setAlertVisible(false), 2000);
+  const handleDeleteButton = (id) => {
+    try {
+      const response = axios.delete(`/api/ride-request/${id}`);
+      console.log(response);
+      if (response) {
+        setAlertMessage('Deleted successfully');
+        setAlertVisible(true);
+        setTimeout(() => setAlertVisible(false), 2000);
+      }
+      fetchData(status);
+    } catch (error) {
+      console.error('Error deleting user:', error);
     }
-    fetchData(status);
-  } catch (error) {
-    console.error('Error deleting user:', error);
   }
-}
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full overflow-x-auto">
@@ -219,6 +219,7 @@ const handleDeleteButton = (id) => {
             <option value="ride_active">Ride Active</option>
             <option value="ride_completed">Ride Completed</option>
             <option value="bidding">Bidding</option>
+            <option value="expired">Expired</option>
           </select>
           <input
             type="text"
@@ -363,7 +364,7 @@ const handleDeleteButton = (id) => {
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                       <path
+                        <path
                           d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Z"
                           fill="currentColor"
                         />
@@ -381,81 +382,68 @@ const handleDeleteButton = (id) => {
             ))}
           </tbody>
         </table>
-        <div className="flex justify-center mt-4 gap-4">
+        <div className="flex justify-center mt-6 items-center gap-2 flex-wrap">
+          {/* Previous Button */}
           <button
-            className={`px-4 py-2 ${currentPage === 1 ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-l`}
+            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'
+              }`}
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
             Previous
           </button>
 
-          {/* Page numbers */}
-          <div className="flex items-center space-x-2">
-            {/* Show the first page */}
-            {currentPage > 3 && (
-              <button
-                className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => handlePageChange(1)}
-              >
-                1
-              </button>
-            )}
+          {/* Dynamic Page Numbers */}
+          {(() => {
+            const maxButtons = 10;
+            let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let end = start + maxButtons - 1;
+            if (end > totalPages) {
+              end = totalPages;
+              start = Math.max(1, end - maxButtons + 1);
+            }
 
-            {/* Show "..." if there are hidden pages between first and current */}
-            {currentPage > 3 && (
-              <span className="px-4 py-2 text-gray-500">...</span>
-            )}
+            const buttons = [];
+            for (let i = start; i <= end; i++) {
+              buttons.push(
+                <button
+                  key={i}
+                  className={`px-3 py-1 rounded ${i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                    }`}
+                  onClick={() => handlePageChange(i)}
+                >
+                  {i}
+                </button>
+              );
+            }
 
-            {/* Show current page - 1, current page, and current page + 1 */}
-            {currentPage > 1 && (
-              <button
-                className={`px-4 py-2 ${currentPage === currentPage - 1 ? 'bg-blue-500 text-white' : 'bg-gray-300 '} rounded`}
-                onClick={() => handlePageChange(currentPage - 1)}
-              >
-                {currentPage - 1}
-              </button>
-            )}
-            <button
-              className={`px-4 py-2 ${currentPage === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
-              onClick={() => handlePageChange(currentPage)}
-            >
-              {currentPage}
-            </button>
-            {currentPage < totalPages && (
-              <button
-                className={`px-4 py-2 ${currentPage === currentPage + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded`}
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                {currentPage + 1}
-              </button>
-            )}
+            return buttons;
+          })()}
 
-            {/* Show "..." if there are hidden pages between last and current */}
-            {currentPage < totalPages - 2 && (
-              <span className="px-4 py-2 text-gray-500">...</span>
-            )}
-
-            {/* Show the last page */}
-            {currentPage < totalPages - 2 && (
+          {/* Show "..." + Last Page if not already in range */}
+          {currentPage < totalPages - 4 && (
+            <>
+              <span className="px-2 text-gray-500">...</span>
               <button
-                className="px-4 py-2 bg-gray-300 rounded"
+                className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                  }`}
                 onClick={() => handlePageChange(totalPages)}
               >
                 {totalPages}
               </button>
-            )}
-          </div>
+            </>
+          )}
 
+          {/* Next Button */}
           <button
-            className={`px-4 py-2 ${currentPage === totalPages ? 'bg-gray-300' : 'bg-blue-500 text-white'} rounded-r`}
+            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'
+              }`}
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
             Next
           </button>
         </div>
-
         {
           editModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

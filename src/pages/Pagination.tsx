@@ -1,69 +1,69 @@
 import React from 'react';
 
 const Pagination = ({ totalPages, currentPage, onPageChange }) => {
-  const generatePages = () => {
-    const pages = [];
-    const ellipsis = '...';
+  const maxButtons = 10;
 
-    if (totalPages <= 5) {
-      // If total pages are 5 or fewer, show all pages
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      // Always show the first two pages
-      pages.push(1);
-      if (currentPage > 3) pages.push(ellipsis);
+  let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  let end = start + maxButtons - 1;
 
-      // Show current page and its neighbors
-      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-        if (i > 1 && i < totalPages) pages.push(i);
-      }
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(1, end - maxButtons + 1);
+  }
 
-      // Add ellipsis if necessary
-      if (currentPage < totalPages - 2) pages.push(ellipsis);
-
-      // Always show the last page
-      pages.push(totalPages);
-    }
-
-    return pages;
-  };
-
-  const handleClick = (page) => {
-    if (page !== '...' && page !== currentPage) {
-      onPageChange(page);
-    }
-  };
+  const pages = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(
+      <button
+        key={i}
+        className={`px-3 py-1 rounded ${
+          i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+        }`}
+        onClick={() => onPageChange(i)}
+      >
+        {i}
+      </button>
+    );
+  }
 
   return (
-    <div className="mt-4 flex justify-center">
+    <div className="flex justify-center mt-6 items-center gap-2 flex-wrap">
+      {/* Previous Button */}
       <button
-        className={`mx-1 px-3 py-1 border rounded ${
-          currentPage === 1 ? 'bg-gray-400 text-white' : 'bg-gray-200 text-black'
+        className={`px-3 py-1 rounded ${
+          currentPage === 1 ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'
         }`}
-        onClick={() => handleClick(currentPage - 1)}
+        onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
         Previous
       </button>
 
-      {generatePages().map((page, index) => (
-        <button
-          key={index}
-          className={`mx-1 px-3 py-1 border rounded ${
-            page === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
-          }`}
-          onClick={() => handleClick(page)}
-          disabled={page === '...'}
-        >
-          {page}
-        </button>
-      ))}
+      {pages}
 
+      {/* Show ellipsis + last page if not already shown */}
+      {end < totalPages && (
+        <>
+          {end < totalPages - 1 && (
+            <span className="px-2 text-gray-500">...</span>
+          )}
+          <button
+            className={`px-3 py-1 rounded ${
+              currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            }`}
+            onClick={() => onPageChange(totalPages)}
+          >
+            {totalPages}
+          </button>
+        </>
+      )}
+
+      {/* Next Button */}
       <button
-        className={`mx-1 px-3 py-1 border rounded ${
-          currentPage === totalPages ? 'bg-gray-400 text-white' : 'bg-gray-200 text-black'
+        className={`px-3 py-1 rounded ${
+          currentPage === totalPages ? 'bg-gray-300 text-black' : 'bg-blue-500 text-white'
         }`}
-        onClick={() => handleClick(currentPage + 1)}
+        onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
         Next

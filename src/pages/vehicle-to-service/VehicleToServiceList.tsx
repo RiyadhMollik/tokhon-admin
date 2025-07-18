@@ -9,6 +9,7 @@ const VehicleToServiceList = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+
     const fetchVehicles = async (page) => {
         try {
             setLoading(true);
@@ -18,8 +19,7 @@ const VehicleToServiceList = () => {
                     limit: 10,
                 },
             });
-            console.log(data);
-            
+
             setVehicles(data.vehicles);
             setTotalPages(data.totalPages);
         } catch (err) {
@@ -33,12 +33,10 @@ const VehicleToServiceList = () => {
         fetchVehicles(page);
     }, [page]);
 
-    const handlePrev = () => {
-        if (page > 1) setPage((prev) => prev - 1);
-    };
-
-    const handleNext = () => {
-        if (page < totalPages) setPage((prev) => prev + 1);
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
     };
 
     return (
@@ -77,12 +75,12 @@ const VehicleToServiceList = () => {
                         <tbody>
                             {vehicles.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-4">No vehicles found.</td>
+                                    <td colSpan="9" className="text-center py-4">No vehicles found.</td>
                                 </tr>
                             ) : (
                                 vehicles.map((vehicle, idx) => (
                                     <tr key={vehicle.id}>
-                                        <td className="border px-4 py-2">{(page - 1) * 5 + idx + 1}</td>
+                                        <td className="border px-4 py-2">{(page - 1) * 10 + idx + 1}</td>
                                         <td className="border px-4 py-2">{vehicle.name}</td>
                                         <td className="border px-4 py-2">{vehicle.vehicleTypeName}</td>
                                         <td className="border px-4 py-2">{vehicle.perKm}</td>
@@ -124,20 +122,61 @@ const VehicleToServiceList = () => {
                 </div>
             )}
 
-            {/* Pagination controls */}
-            <div className="mt-4 flex justify-center items-center gap-4">
+            {/* Pagination */}
+            <div className="mt-6 flex justify-center items-center flex-wrap gap-2">
+                {/* Prev Button */}
                 <button
-                    onClick={handlePrev}
+                    onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
                 >
-                    Prev
+                    Previous
                 </button>
-                <span className="text-sm font-medium">Page {page} of {totalPages}</span>
+
+                {/* Page numbers */}
+                {(() => {
+                    const maxButtons = 10;
+                    let start = Math.max(1, page - Math.floor(maxButtons / 2));
+                    let end = start + maxButtons - 1;
+                    if (end > totalPages) {
+                        end = totalPages;
+                        start = Math.max(1, end - maxButtons + 1);
+                    }
+
+                    const buttons = [];
+                    for (let i = start; i <= end; i++) {
+                        buttons.push(
+                            <button
+                                key={i}
+                                className={`px-3 py-1 rounded ${i === page ? 'bg-blue-500 text-white' : 'bg-gray-100 text-black'}`}
+                                onClick={() => handlePageChange(i)}
+                            >
+                                {i}
+                            </button>
+                        );
+                    }
+
+                    return buttons;
+                })()}
+
+                {/* "..." and Last page */}
+                {page < totalPages - 4 && (
+                    <>
+                        <span className="px-2 text-gray-500">...</span>
+                        <button
+                            className={`px-3 py-1 rounded ${page === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-100 text-black'}`}
+                            onClick={() => handlePageChange(totalPages)}
+                        >
+                            {totalPages}
+                        </button>
+                    </>
+                )}
+
+                {/* Next Button */}
                 <button
-                    onClick={handleNext}
+                    onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                    className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
                 >
                     Next
                 </button>

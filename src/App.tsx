@@ -37,6 +37,9 @@ import VehicleToServiceList from './pages/vehicle-to-service/VehicleToServiceLis
 import EditVehicleToService from './pages/vehicle-to-service/EditVehicleToService';
 import NotificationResult from './pages/NotificationResult/NotificationResult';
 import GlobalSetting from './pages/GlobalSetting/GlobalSetting';
+import Role from './pages/Role/Role';
+import RolePermission from './pages/Role/RolePerrmission';
+import CreateAdminUser from './pages/Role/CreateAdminUser';
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -266,6 +269,39 @@ function App() {
               <PageTitle title="Tokhon" />
               <PrivateRoute>
                 <TopupList />
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
+          path="/roles"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <Role/>
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
+          path="/role-permission"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <RolePermission />
+              </PrivateRoute>
+            </>
+          }
+        />
+        <Route
+          path="/create-admin-user"
+          element={
+            <>
+              <PageTitle title="Tokhon" />
+              <PrivateRoute>
+                <CreateAdminUser />
               </PrivateRoute>
             </>
           }
