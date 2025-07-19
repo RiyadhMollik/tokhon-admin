@@ -292,7 +292,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </SidebarLinkGroup>
               ) : null}
 
-             
+              {rolePermission['Create Admin User'] ||
+              rolePermission['Roles'] ||
+              rolePermission['Permissions'] ? (
                 <SidebarLinkGroup
                   activeCondition={pathname === '/role' || pathname.includes('role')}
                 >
@@ -365,7 +367,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         className={`translate transform overflow-hidden ${!open && 'hidden'}`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                        
+                          {rolePermission['Create Admin User'] && (
                             <li>
                               <NavLink
                                 to="/create-admin-user"
@@ -377,8 +379,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Create Admin User
                               </NavLink>
                             </li>
-                         
-                          
+                          )}
+                          {rolePermission['Roles'] && (
                             <li>
                               <NavLink
                                 to="/roles"
@@ -390,7 +392,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Role
                               </NavLink>
                             </li>
-                       
+                          )}
+                          {rolePermission['Permissions'] && (
                             <li>
                               <NavLink
                                 to="/role-permission"
@@ -402,13 +405,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Role Permission
                               </NavLink>
                             </li>
-                         
+                          )}
                         </ul>
                       </div>
                     </React.Fragment>
                   )}
                 </SidebarLinkGroup>
-            
+              ) : null}
 
               {rolePermission['Add Vehicle Type'] || rolePermission['Vehicle Type List'] ? (
                 <SidebarLinkGroup
