@@ -215,10 +215,11 @@ const RideRequestList = () => {
             aria-label="Default select example"
           >
             <option value="">All</option>
+            <option value="bidding">New Ride</option>
             <option value="pending">Pending</option>
             <option value="ride_active">Ride Active</option>
             <option value="ride_completed">Ride Completed</option>
-            <option value="bidding">Bidding</option>
+            <option value="bids">Bidding</option>
             <option value="expired">Expired</option>
           </select>
           <input
